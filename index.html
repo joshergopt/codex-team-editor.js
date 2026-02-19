@@ -1,363 +1,2378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MARSH RULA Tool — Enhanced Reporting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MARSH RULA Tool (Client Edition)</title>
   <style>
-    :root {
-      --bg: #f3f7ff;
-      --card: #fff;
-      --text: #0d1b2a;
-      --muted: #50617a;
-      --line: #dce6f6;
-      --cyan: #00c2d1;
-      --blue: #2f73ff;
-      --purple: #6b57ff;
-      --green: #2abf7a;
-      --amber: #ffbf3a;
-      --red: #e73742;
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel2:#fbfcff;
+      --text:#0b1220;
+      --muted:#5b6b82;
+      --border:#dbe3f0;
+      --shadow:0 10px 28px rgba(11,18,32,.10);
+      --shadow2:0 18px 46px rgba(11,18,32,.12);
+      --accent:#00c2d1; /* marsh cyan */
+      --accent2:#1b84ff;
+      --danger:#e73742;
+      --warn:#ffbf3a;
+      --ok:#2abf7a;
+      --low:#a7b31a; /* yellow-green */
+      --radius:16px;
+      --radius2:22px;
+      --sans: Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    }
+    [data-theme="dark"]{
+      --bg:#071022;
+      --panel:#0f1a30;
+      --panel2:#101b33;
+      --text:#e9eefc;
+      --muted:#aab6de;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --shadow2:0 18px 52px rgba(0,0,0,.40);
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 60%, #eef3fb 100%);
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width:1240px;
+      margin:0 auto;
+      padding:18px 18px 40px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 16px 12px;
+      border:1px solid var(--border);
+      border-radius:var(--radius2);
+      background:linear-gradient(180deg, rgba(0,194,209,.10), rgba(0,194,209,.02));
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+    }
+    .h-left{ display:flex; flex-direction:column; gap:4px; }
+    header h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+      font-weight:800;
+      color: var(--text);
+    }
+    header .sub{
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.2;
+      max-width:780px;
+    }
+
+    .h-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.55);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+
+    /* Units segmented control */
+    .seg{
+      display:inline-flex;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      background:rgba(0,0,0,.03);
+    }
+    .segBtn{
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:8px 10px;
+      font-weight:850;
+      font-size:12px;
+      cursor:pointer;
+      letter-spacing:.2px;
+      line-height:1;
+    }
+    .segBtn:hover{ background:rgba(0,0,0,.04); }
+    .segBtn.active{
+      color:var(--text);
+      background:linear-gradient(180deg, rgba(0,194,209,.18), rgba(0,194,209,.10));
+    }
+
+    /* Multi-select polish */
+    select[multiple]{
+      min-height:92px;
+      padding:8px;
+    }
+    select[multiple] option{
+      padding:6px 6px;
+    }
+
+    [data-theme="dark"] .pill{ background:rgba(0,0,0,.18); }
+
+    .btn{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.65);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.15px;
+      transition:transform .06s ease, filter .15s ease, background .15s ease;
+      user-select:none;
+      box-shadow:0 6px 18px rgba(11,18,32,.08);
+    }
+    [data-theme="dark"] .btn{
+      background:rgba(255,255,255,.06);
+      box-shadow:none;
+    }
+    .btn:hover{ filter:brightness(1.03); }
+    .btn:active{ transform:translateY(1px); }
+    .btn.primary{
+      background:linear-gradient(180deg, rgba(0,194,209,.22), rgba(0,194,209,.10));
+      border-color:rgba(0,194,209,.55);
+    }
+    .btn.blue{
+      background:linear-gradient(180deg, rgba(27,132,255,.18), rgba(27,132,255,.08));
+      border-color:rgba(27,132,255,.45);
+    }
+    .btn.ghost{
+      background:transparent;
+      box-shadow:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.18fr .82fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow2);
+      border-radius:var(--radius2);
+      overflow:hidden;
+    }
+    .card .hd{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,0));
+    }
+    [data-theme="dark"] .card .hd{
+      background:rgba(0,0,0,.14);
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:14.5px;
+      letter-spacing:.2px;
+      font-weight:900;
+    }
+    .card .bd{
+      padding:12px 14px 14px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px;
+      align-items:stretch;
+    }
+    .field{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-bottom:10px;
+    }
+
+    .field.full{
+      grid-column: 1 / -1;
+    }
+
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.15px;
+    }
+    select, input[type="text"], input[type="date"], textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:var(--panel2);
+      color:var(--text);
+      padding:10px 10px;
+      outline:none;
+      font-size:13px;
+    }
+    [data-theme="dark"] select, [data-theme="dark"] input[type="text"], [data-theme="dark"] input[type="date"], [data-theme="dark"] textarea{
+      background:rgba(0,0,0,.20);
+      border-color:rgba(255,255,255,.12);
+    }
+    textarea{ min-height:92px; resize:vertical; }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:-4px;
+      margin-bottom:10px;
+      line-height:1.25;
+    }
+
+    .hr{ height:1px; background:var(--border); margin:10px 0; }
+
+    /* Summary */
+    .scoreline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .scorebig{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .riskTag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.55);
+      font-weight:900;
+      font-size:12px;
+      color:var(--text);
+    }
+    [data-theme="dark"] .riskTag{ background:rgba(0,0,0,.18); }
+
+    .gWrap{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,0,0,.015), rgba(0,0,0,0));
+      border-radius:16px;
+      padding:10px 10px 8px;
+      max-width:560px;
+    }
+    [data-theme="dark"] .gWrap{
+      background:rgba(0,0,0,.18);
+    }
+
+    .gTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    .svgBlock{ width:100%; height:auto; display:block; }
+
+    /* Ensure SVGs never overflow the card */
+    #gaugeHost svg, #breakdownHost svg, #profileHost svg, #spiderHost svg, #reportGaugePngHost svg{
+      max-width:100%;
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    #reportGaugePngHost{ max-width:560px; width:100%; }
+
+
+    .list{
+      margin:8px 0 0;
+      padding-left:18px;
+      font-weight:400 !important;
+    }
+    .list li{ margin:4px 0; font-weight:400 !important; }
+
+    /* Report preview (white, client-ready) */
+    .report{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:16px;
+      padding:14px 14px 16px;
+      color:#000;
       font-family: Arial, sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at 15% -10%, #dff9fc 0, transparent 35%), var(--bg);
+      font-size:11pt;
+      line-height:1.25;
+    }
+    .report h3{
+      margin:0 0 10px;
+      font-size:13pt;
+      letter-spacing:.2px;
+    }
+    .sectionTitle{
+      font-size:12pt;
+      font-weight:900;
+      color:#00c2d1;
+      margin:12px 0 6px;
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 170px 1fr;
+      gap:6px 10px;
+      margin:6px 0 0;
+      font-size:11pt;
+    }
+    .k{ color:#000; font-weight:700; }
+    .v{ color:#000; font-weight:400; }
+
+    .inlineNote{ color:#000; }
+    .fine{ font-size:10pt; color:#111; }
+
+    .badge{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.20);
+      font-weight:900;
+      font-size:10pt;
+      background:#f6f8ff;
     }
 
-    .wrap { max-width: 1220px; margin: 0 auto; padding: 20px; }
+    details{
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:14px;
+      padding:10px 10px 8px;
+      background:#fff;
+      margin-top:12px;
+    }
+    details summary{
+      cursor:pointer;
+      font-weight:900;
+      font-size:11pt;
+      color:#0b1220;
+      outline:none;
+    }
+    details .subsum{ margin-top:8px; }
 
-    .top {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: 0 14px 38px rgba(15, 38, 74, .12);
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
+    table{
+      border-collapse:collapse;
+      width:100%;
+      font-size:10pt;
+      background:#fff;
+    }
+    th, td{
+      border:1px solid rgba(0,0,0,.16);
+      padding:5px 6px;
+      text-align:center;
+      vertical-align:middle;
+    }
+    th{ background:#f2f6ff; font-weight:900; }
+    .hl{ outline:3px solid #00c2d1; outline-offset:-2px; background:#e7fbff; font-weight:900; }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,.80);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.20);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:12.5px;
+      letter-spacing:.2px;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      z-index:999;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-2px); }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
     }
 
-    .top h1 { margin: 0; font-size: 20px; }
-    .muted { color: var(--muted); font-size: 13px; }
-
-    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
-    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: 0 10px 32px rgba(15, 38, 74, .09);
-      overflow: hidden;
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
     }
-
-    .hd {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      background: linear-gradient(180deg, rgba(0, 194, 209, .11), rgba(0, 194, 209, .02));
-    }
-
-    .hd h2 { margin: 0; font-size: 15px; }
-    .bd { padding: 14px; }
-
-    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
-    label { font-size: 12px; color: var(--muted); font-weight: 700; }
-
-    input, select, textarea {
-      width: 100%;
-      margin-top: 5px;
-      border: 1px solid var(--line);
-      background: #fbfdff;
-      border-radius: 12px;
-      padding: 10px;
-      color: var(--text);
-    }
-
-    textarea { min-height: 88px; }
-
-    .btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      padding: 9px 12px;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      color: #fff;
-      border-color: transparent;
-      background: linear-gradient(120deg, var(--blue), var(--cyan));
-    }
-
-    .copyRow { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .copyBtn {
-      border: none;
-      color: #fff;
-      font-weight: 800;
-      letter-spacing: .2px;
-      border-radius: 999px;
-      padding: 9px 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(29, 86, 220, .25);
-      background: linear-gradient(120deg, #2f73ff, #00c2d1 52%, #6b57ff);
-      background-size: 170% 170%;
-      transition: transform .08s ease, filter .18s ease, background-position .25s ease;
-    }
-
-    .copyBtn:hover { filter: brightness(1.05); background-position: 100% 0; }
-    .copyBtn:active { transform: translateY(1px); }
-
-    .score {
-      font-size: 28px;
-      font-weight: 900;
-      margin: 6px 0 12px;
-    }
-
-    .riskTag {
-      display: inline-block;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    svg { width: 100%; height: auto; display: block; }
-
-    .report {
-      border: 1px solid #d2d9ea;
-      border-radius: 14px;
-      padding: 12px;
-      background: #fff;
-      font-size: 11pt;
-      line-height: 1.25;
-    }
-
-    .section { color: var(--cyan); font-weight: 900; margin: 12px 0 6px; font-size: 12pt; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 10pt; }
-    th, td { border: 1px solid #95a7c8; padding: 5px; text-align: center; }
-    th { background: #eef4ff; }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.85);
-      color: #fff;
-      border-radius: 10px;
-      padding: 8px 11px;
-      opacity: 0;
-      transition: opacity .15s ease;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div>
-        <h1>MARSH RULA Tool (Client Edition)</h1>
-        <div class="muted">Enhanced reporting diagrams (gauge, profile bars, spider chart, heat matrix) and Word-ready data tables.</div>
+<div class="wrap">
+  <header>
+    <div class="h-left">
+      <h1>MARSH RULA Tool (Client Edition)</h1>
+      <div class="sub">Rapid Upper Limb Assessment (RULA) · Light-mode default · Word-ready copy buttons + Appendix + JSON Save/Load</div>
+    </div>
+    <div class="h-right">
+      <span class="pill" id="versionPill">v2 · RULA</span>
+      
+      <div class="seg" role="group" aria-label="Units">
+        <button class="segBtn active" type="button" id="unitImperial" data-unit="imperial" title="Imperial (lb)">Imperial</button>
+        <button class="segBtn" type="button" id="unitMetric" data-unit="metric" title="Metric (kg)">Metric</button>
       </div>
-      <button class="btn primary" id="btnCalc">Update RULA Score</button>
+<button class="btn ghost" id="themeToggle" title="Toggle light/dark">Toggle Theme</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: Inputs -->
+    <div class="card">
+      <div class="hd">
+        <h2>Inputs</h2>
+        <div class="btnRow">
+          <button class="btn primary" id="btnCalc">Update RULA Score</button>
+          <button class="btn" id="btnReset">Reset</button>
+          <button class="btn blue" id="btnSaveJson">Save JSON</button>
+          <button class="btn blue" id="btnLoadJson">Load JSON</button>
+          <input type="file" id="jsonFile" accept="application/json" style="display:none" />
+        </div>
+      </div>
+      <div class="bd">
+        <div class="row">
+          <div class="field">
+            <label for="assessor">Assessor</label>
+            <input type="text" id="assessor" placeholder="Name" />
+          </div>
+          <div class="field">
+            <label for="assessmentDate">Date</label>
+            <input type="date" id="assessmentDate" />
+          </div>
+          <div class="field">
+            <label for="location">Location</label>
+            <input type="text" id="location" placeholder="Area / workstation" />
+          </div>
+          <div class="field">
+            <label for="task">Task / Activity</label>
+            <input type="text" id="task" placeholder="Brief task description" />
+          </div>
+        </div>
+
+        <div class="hint">Select the posture representing the period of <b>highest upper limb and trunk loading</b>. Scoring uses the embedded Table A/B/C matrices from your original module.</div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <div style="flex:1 1 100%; font-weight:900; margin:2px 0 6px;">Group A — Arm & Wrist</div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="upperArm">Upper arm position</label>
+            <select id="upperArm">
+              <option value="1">0–20° (arm by side)</option>
+              <option value="2">21–45° flexion</option>
+              <option value="3">46–90° flexion</option>
+              <option value="4">&gt;90° flexion / abduction</option>
+              <option value="5">Arm behind body</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="upperArmAdjust">Upper arm adjustments (multi)</label>
+            <select id="upperArmAdjust" multiple size="3">
+              <option value="1">Shoulder raised</option>
+              <option value="1">Upper arm abducted</option>
+              <option value="-1">Arm supported / leaning</option>
+            </select>
+            <div class="mini">Use Ctrl (Win) / Cmd (Mac) to select multiple.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="lowerArm">Lower arm position</label>
+            <select id="lowerArm">
+              <option value="1">60–100° (elbow ~90°)</option>
+              <option value="2">&lt;60°</option>
+              <option value="2">&gt;100°</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lowerArmAdjust">Lower arm adjustment</label>
+            <select id="lowerArmAdjust">
+              <option value="0">None</option>
+              <option value="1">Across midline or out to side</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="wrist">Wrist position</label>
+            <select id="wrist">
+              <option value="1">Neutral (±15°)</option>
+              <option value="2">Flexed &gt;15°</option>
+              <option value="2">Extended &gt;15°</option>
+              <option value="3">Marked flex/ext &gt;30°</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="wristAdjust">Wrist deviation</label>
+            <select id="wristAdjust">
+              <option value="0">In line with forearm</option>
+              <option value="1">Bent from midline (ulnar/radial)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="wristTwist">Wrist twist (pron/sup)</label>
+            <select id="wristTwist">
+              <option value="1">Mid-range (thumb up)</option>
+              <option value="2">At/near end range</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <div style="flex:1 1 100%; font-weight:900; margin:2px 0 6px;">Group B — Neck, Trunk & Legs</div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="neck">Neck position</label>
+            <select id="neck">
+              <option value="1">0–10° flexion</option>
+              <option value="2">11–20° flexion</option>
+              <option value="3">&gt;20° flexion</option>
+              <option value="4">Extension</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="neckAdjust">Neck adjustments (multi)</label>
+            <select id="neckAdjust" multiple size="2">
+              <option value="1">Neck twisted</option>
+              <option value="1">Neck side-bent</option>
+            </select>
+            <div class="mini">Use Ctrl/Cmd for multi-select.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="trunk">Trunk position</label>
+            <select id="trunk">
+              <option value="1">0–20° flexion</option>
+              <option value="2">21–60° flexion</option>
+              <option value="3">&gt;60° flexion</option>
+              <option value="4">Extension / side-bend</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="trunkAdjust">Trunk adjustments (multi)</label>
+            <select id="trunkAdjust" multiple size="2">
+              <option value="1">Trunk twisted</option>
+              <option value="1">Trunk side-bent</option>
+            </select>
+            <div class="mini">Use Ctrl/Cmd for multi-select.</div>
+          </div>
+          <div class="field">
+            <label for="legs">Legs / support</label>
+            <select id="legs">
+              <option value="1">Seated with balanced support</option>
+              <option value="2">Seated without adequate support</option>
+              <option value="2">Standing with bilateral support</option>
+              <option value="3">Standing with unilateral / unstable</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <div style="flex:1 1 100%; font-weight:900; margin:2px 0 6px;">Exposure Modifiers</div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="muscleUse">Muscle use</label>
+            <select id="muscleUse">
+              <option value="0">Intermittent (&lt;1 min / &lt;4x per min)</option>
+              <option value="1">Static &gt;1 min or repeated &gt;4x/min</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="forceLoad">Force / load</label>
+            <select id="forceLoad">
+              <option value="0" data-metric="&lt; 2 kg intermittent" data-imperial="&lt; 4.4 lb intermittent">&lt; 4.4 lb intermittent</option>
+              <option value="1" data-metric="2–10 kg intermittent" data-imperial="4.4–22 lb intermittent">4.4–22 lb intermittent</option>
+              <option value="2" data-metric="2–10 kg static / repeated" data-imperial="4.4–22 lb static / repeated">4.4–22 lb static / repeated</option>
+              <option value="3" data-metric="&gt;10 kg or shock / rapid build-up" data-imperial="&gt;22 lb or shock / rapid build-up">&gt;22 lb or shock / rapid build-up</option>
+</select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field full">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Context, observations, tools used, exposure duration, etc."></textarea>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <div class="hd"><h2>Inputs</h2></div>
-        <div class="bd">
-          <div class="row">
-            <div><label>Assessor<input id="assessor" type="text" placeholder="Name"></label></div>
-            <div><label>Date<input id="assessmentDate" type="date"></label></div>
-            <div><label>Location<input id="location" type="text" placeholder="Workstation"></label></div>
-            <div><label>Task<input id="task" type="text" placeholder="Task description"></label></div>
-          </div>
-          <hr>
-          <div class="row">
-            <div><label>Upper Arm<select id="upperArm"><option value="1">0–20°</option><option value="2">21–45°</option><option value="3">46–90°</option><option value="4">&gt;90°</option></select></label></div>
-            <div><label>Lower Arm<select id="lowerArm"><option value="1">60–100°</option><option value="2">&lt;60° or &gt;100°</option></select></label></div>
-            <div><label>Wrist<select id="wrist"><option value="1">Neutral</option><option value="2">&gt;15°</option><option value="3">&gt;30°</option></select></label></div>
-            <div><label>Wrist Twist<select id="wristTwist"><option value="1">Mid-range</option><option value="2">End-range</option></select></label></div>
-            <div><label>Neck<select id="neck"><option value="1">0–10°</option><option value="2">11–20°</option><option value="3">&gt;20°/Ext.</option></select></label></div>
-            <div><label>Trunk<select id="trunk"><option value="1">0–20°</option><option value="2">21–60°</option><option value="3">&gt;60°/Ext.</option></select></label></div>
-            <div><label>Legs<select id="legs"><option value="1">Balanced</option><option value="2">Some imbalance</option><option value="3">Unstable</option></select></label></div>
-            <div><label>Modifiers<select id="mod"><option value="0">None</option><option value="1">Static/repetitive</option><option value="2">Force + static</option><option value="3">High force</option></select></label></div>
-          </div>
-          <div style="margin-top:8px;"><label>Notes<textarea id="notes" placeholder="Observations"></textarea></label></div>
+    <!-- RIGHT: Summary + Report -->
+    <div class="card">
+      <div class="hd">
+        <h2>Outputs</h2>
+        <div class="btnRow">
+          <button class="btn blue" id="btnCopySummary">Copy Summary</button>
+          <button class="btn blue" id="btnCopyReport">Copy Report</button>
+          <button class="btn blue" id="btnCopyBreakdown">Copy Breakdown</button>
+          <button class="btn blue" id="btnCopyProfile">Copy Profile</button>
+          <button class="btn blue" id="btnCopySpider">Copy Spider</button>
+          <button class="btn blue" id="btnCopyAppendix">Copy Appendix</button>
         </div>
       </div>
+      <div class="bd">
 
-      <div class="card">
-        <div class="hd">
-          <h2>Outputs</h2>
-          <div class="copyRow">
-            <button class="copyBtn" id="copySummary">📋 Copy Summary</button>
-            <button class="copyBtn" id="copyReport">🧾 Copy Full Report</button>
-            <button class="copyBtn" id="copyTables">📊 Copy Data Tables</button>
+        <div id="summaryBlock">
+          <div class="scoreline">
+            <div class="scorebig">Final RULA Score: <span id="finalScore">—</span></div>
+            <div class="riskTag" id="riskTag">—</div>
+          </div>
+
+          <div class="gWrap">
+            <div class="gTitle">
+              <span>Risk Gauge</span>
+              <span id="riskText" class="mini">—</span>
+            </div>
+            <div id="gaugeHost"></div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div style="font-weight:900; margin-bottom:6px;">Primary Risk Drivers</div>
+          <ul class="list" id="driverList"><li>—</li></ul>
+
+          <div class="hr"></div>
+
+          <div style="font-weight:900; margin-bottom:6px;">Score Trace</div>
+          <div class="kv" style="grid-template-columns: 210px 1fr;">
+            <div class="k">Group A combined posture</div><div class="v" id="outGroupA">—</div>
+            <div class="k">Wrist+twist combined</div><div class="v" id="outWristCombo">—</div>
+            <div class="k">Table A (raw → +mods)</div><div class="v" id="outTableA">—</div>
+            <div class="k">Group B combined posture</div><div class="v" id="outGroupB">—</div>
+            <div class="k">Table B (raw → +mods)</div><div class="v" id="outTableB">—</div>
+            <div class="k">Modifiers</div><div class="v" id="outMods">—</div>
           </div>
         </div>
-        <div class="bd">
-          <div class="score">Final Score: <span id="finalScore">—</span></div>
-          <div class="riskTag" id="riskTag">—</div>
 
-          <div id="gaugeHost"></div>
-          <div style="margin-top:8px" id="barHost"></div>
-          <div style="margin-top:8px" id="spiderHost"></div>
-          <div style="margin-top:8px" id="heatHost"></div>
+        <div class="hr"></div>
 
-          <div class="report" id="reportBlock" style="margin-top:10px"></div>
+        <div class="report" id="reportBlock">
+          <h3>RULA Ergonomic Assessment Report</h3>
+
+          <div class="sectionTitle">A. Assessment Metadata</div>
+          <div class="kv">
+            <div class="k">Assessor</div><div class="v" id="rAssessor">—</div>
+            <div class="k">Date</div><div class="v" id="rDate">—</div>
+            <div class="k">Location</div><div class="v" id="rLocation">—</div>
+            <div class="k">Task / Activity</div><div class="v" id="rTask">—</div>
+          </div>
+
+          <div class="sectionTitle">B. Score & Risk Summary</div>
+          <div class="inlineNote" id="rScoreSentence" style="font-weight:700;">Final RULA score: —</div>
+          <div class="fine" id="rRiskBand">Risk band: —</div>
+
+          <div style="margin-top:10px;" id="reportGaugePngHost"></div>
+
+          <div class="sectionTitle">C. Postural Risk Contributors</div>
+          <ul class="list" id="rDrivers"><li>—</li></ul>
+
+          <div class="sectionTitle">D. Recommended Focus Areas</div>
+          <ul class="list" id="rRecs"><li>Generate a score to populate recommendations.</li></ul>
+
+          <div class="sectionTitle">E. Notes</div>
+          <div class="inlineNote" id="rNotes">—</div>
+
+          <div class="sectionTitle">F. RULA Component Breakdown</div>
+          <div id="breakdownHost" style="margin-top:8px;"></div>
+
+          <div class="sectionTitle">G. Visual Posture Profile</div>
+          <div id="profileHost" style="margin-top:8px;"></div>
+
+          <div class="sectionTitle">H. Spider Chart — Exposure Profile</div>
+          <div id="spiderHost" style="margin-top:8px;"></div>
         </div>
+
+        <details id="appendixDetails">
+          <summary>Appendix — Inputs & Scoring Rubric (expert review)</summary>
+          <div class="subsum" id="appendixBlock">
+            <div class="sectionTitle" style="color:#0b1220; font-size:12pt;">A1. Captured Inputs</div>
+            <div id="appInputs"></div>
+
+            <div class="sectionTitle" style="color:#0b1220; font-size:12pt;">A2. Scoring Trace</div>
+            <div id="appTrace"></div>
+
+            <div class="sectionTitle" style="color:#0b1220; font-size:12pt;">A3. Lookup Tables Used</div>
+            <div class="fine">Cells used for this assessment are highlighted.</div>
+            <div style="margin-top:10px;">
+              <div style="font-weight:900; margin-bottom:6px;">Table A</div>
+              <div id="appTableA"></div>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="font-weight:900; margin-bottom:6px;">Table B</div>
+              <div id="appTableB"></div>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="font-weight:900; margin-bottom:6px;">Table C</div>
+              <div id="appTableC"></div>
+            </div>
+          </div>
+        </details>
+
       </div>
     </div>
   </div>
+</div>
 
-  <div id="toast" class="toast"></div>
+<div class="toast" id="toast">Copied</div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 1100); };
+<script>
+/* =========================
+   RULA TABLES (from your original module)
+   ========================= */
 
-    const riskText = (s) => s <= 2 ? "Low" : s <= 4 ? "Moderate" : s <= 6 ? "Medium-High" : "High";
+// TABLE A MATRIX (rows: Group A combined posture 1–9, cols: wrist+twist 1–6)
+const TABLE_A = [
+  [1, 2, 2, 3, 3, 4],
+  [2, 2, 3, 3, 4, 4],
+  [2, 3, 3, 4, 4, 5],
+  [3, 3, 4, 4, 5, 5],
+  [3, 4, 4, 5, 5, 6],
+  [4, 4, 5, 5, 6, 6],
+  [4, 5, 5, 6, 6, 7],
+  [5, 5, 6, 6, 7, 7],
+  [5, 6, 6, 7, 7, 7]
+];
 
-    function compute() {
-      const ua = +$("upperArm").value;
-      const la = +$("lowerArm").value;
-      const w = +$("wrist").value;
-      const wt = +$("wristTwist").value;
-      const n = +$("neck").value;
-      const t = +$("trunk").value;
-      const l = +$("legs").value;
-      const m = +$("mod").value;
-      const score = Math.min(7, Math.max(1, Math.round((ua + la + w + wt + n + t + l) / 2.2 + m / 1.5)));
-      return { ua, la, w, wt, n, t, l, m, score };
+// TABLE B MATRIX (rows: neck+trunk combined 1–9, cols: legs 1–3)
+const TABLE_B = [
+  [1, 2, 3],
+  [2, 2, 3],
+  [3, 3, 4],
+  [3, 4, 4],
+  [4, 4, 5],
+  [5, 5, 6],
+  [5, 6, 6],
+  [6, 6, 7],
+  [7, 7, 7]
+];
+
+// TABLE C (final RULA score 1–7) – rows: Table B final (1–7), cols: Table A final (1–8)
+const TABLE_C = [
+  [1, 2, 3, 3, 4, 5, 6, 7],
+  [2, 2, 3, 4, 4, 5, 6, 7],
+  [3, 3, 3, 4, 5, 6, 6, 7],
+  [3, 3, 4, 5, 6, 6, 7, 7],
+  [4, 4, 5, 6, 6, 7, 7, 7],
+  [5, 5, 6, 6, 7, 7, 7, 7],
+  [6, 6, 6, 7, 7, 7, 7, 7]
+];
+
+/* =========================
+   Utilities
+   ========================= */
+const $ = (id)=>document.getElementById(id);
+
+function toast(msg="Done"){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1300);
+}
+
+/* =========================
+   Units (Imperial default, Metric available)
+   ========================= */
+let UNIT_MODE = "imperial"; // default
+
+function applyUnits(mode, {syncSelect=true, update=true} = {}){
+  UNIT_MODE = (mode === "metric") ? "metric" : "imperial";
+
+  // update segmented control UI
+  $("unitImperial")?.classList.toggle("active", UNIT_MODE==="imperial");
+  $("unitMetric")?.classList.toggle("active", UNIT_MODE==="metric");
+
+  // update force/load option labels (values remain the same)
+  const sel = $("forceLoad");
+  if (sel){
+    for (const opt of sel.options){
+      const label = (UNIT_MODE==="metric") ? opt.getAttribute("data-metric") : opt.getAttribute("data-imperial");
+      if (label) opt.textContent = label.replaceAll("&lt;","<").replaceAll("&gt;",">");
     }
+  }
 
-    function scoreColor(score){
-      if(score <= 2) return '#2abf7a';
-      if(score <= 4) return '#a7b31a';
-      if(score <= 6) return '#ffbf3a';
-      return '#e73742';
+  // optional: refresh outputs
+  if (update) {
+    // updateAll is async; fire and forget safely
+    Promise.resolve().then(()=>updateAll()).catch(()=>{});
+  }
+}
+
+function wireUnitToggle(){
+  $("unitImperial")?.addEventListener("click", ()=>applyUnits("imperial"));
+  $("unitMetric")?.addEventListener("click", ()=>applyUnits("metric"));
+}
+
+
+function clamp(val, min, max){
+  return Math.max(min, Math.min(max, val));
+}
+
+function getMultiAdjustSum(sel){
+  let total = 0;
+  for (const opt of sel.selectedOptions){
+    total += parseInt(opt.value, 10) || 0;
+  }
+  return total;
+}
+
+function escapeHtml(str){
+  return String(str ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function themeSet(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  // persist
+  try{ localStorage.setItem("marsh_rula_theme", theme); }catch(_){}
+}
+function themeInit(){
+  let saved = null;
+  try{ saved = localStorage.getItem("marsh_rula_theme"); }catch(_){}
+  themeSet(saved || "light");
+}
+
+/* =========================
+   Color mapping (score 1–7 along same gauge gradient)
+   ========================= */
+const GRAD_STOPS = [
+  {t:0.00, c:"#2abf7a"},
+  {t:0.40, c:"#a7b31a"},
+  {t:0.70, c:"#ffbf3a"},
+  {t:1.00, c:"#e73742"}
+];
+
+function hexToRgb(h){
+  const s = h.replace("#","");
+  const n = parseInt(s, 16);
+  return {r:(n>>16)&255, g:(n>>8)&255, b:n&255};
+}
+function rgbToHex(r,g,b){
+  const to = (x)=>x.toString(16).padStart(2,"0");
+  return "#" + to(r) + to(g) + to(b);
+}
+function lerp(a,b,t){ return a + (b-a)*t; }
+
+function colorAt(t){
+  t = clamp(t, 0, 1);
+  for (let i=0;i<GRAD_STOPS.length-1;i++){
+    const a = GRAD_STOPS[i], b = GRAD_STOPS[i+1];
+    if (t>=a.t && t<=b.t){
+      const u = (t-a.t)/(b.t-a.t || 1);
+      const ra = hexToRgb(a.c), rb = hexToRgb(b.c);
+      return rgbToHex(
+        Math.round(lerp(ra.r, rb.r, u)),
+        Math.round(lerp(ra.g, rb.g, u)),
+        Math.round(lerp(ra.b, rb.b, u))
+      );
     }
+  }
+  return GRAD_STOPS[GRAD_STOPS.length-1].c;
+}
 
-    function gaugeSvg(score){
-      const x = 30 + ((score-1) / 6) * 500;
-      return `<svg viewBox="0 0 560 80" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2abf7a"/><stop offset=".5" stop-color="#ffbf3a"/><stop offset="1" stop-color="#e73742"/></linearGradient></defs>
-        <rect x="30" y="24" width="500" height="14" rx="7" fill="url(#g)"/>
-        <line x1="${x}" y1="14" x2="${x}" y2="50" stroke="#111" stroke-width="2"/>
-        <circle cx="${x}" cy="50" r="4" fill="#111"/>
-        <text x="30" y="67" font-size="11">1</text><text x="530" y="67" font-size="11" text-anchor="end">7</text>
-      </svg>`;
+/* =========================
+   Gauge SVG (horizontal)
+   ========================= */
+function buildGaugeSvg(score){
+  const s = clamp(Number(score)||1, 1, 7);
+  const W = 560, H = 74;
+  const pad = 18;
+  const barY = 26, barH = 14;
+  const barW = W - pad*2;
+
+  const xFor = (val)=> pad + ((val-1)/6)*barW;
+  const px = xFor(s);
+
+  const grad = `
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="${GRAD_STOPS[0].c}"/>
+        <stop offset="${GRAD_STOPS[1].t*100}%" stop-color="${GRAD_STOPS[1].c}"/>
+        <stop offset="${GRAD_STOPS[2].t*100}%" stop-color="${GRAD_STOPS[2].c}"/>
+        <stop offset="100%" stop-color="${GRAD_STOPS[3].c}"/>
+      </linearGradient>
+      <filter id="sh" x="-20%" y="-50%" width="140%" height="200%">
+        <feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="rgba(0,0,0,.20)"/>
+      </filter>
+    </defs>`;
+
+  const ticks = [1,3,5,7].map(v=>{
+    const x = xFor(v);
+    return `<text x="${x}" y="${H-10}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="rgba(0,0,0,.65)">${v}</text>`;
+  }).join("");
+
+  const labelL = `<text x="${pad}" y="16" font-family="Arial, sans-serif" font-size="12" fill="rgba(0,0,0,.60)">Low</text>`;
+  const labelR = `<text x="${W-pad}" y="16" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="rgba(0,0,0,.60)">High</text>`;
+
+  const pointer = `
+    <g filter="url(#sh)">
+      <line x1="${px}" y1="${barY-8}" x2="${px}" y2="${barY+barH+12}" stroke="#111" stroke-width="2"/>
+      <circle cx="${px}" cy="${barY+barH+12}" r="4.6" fill="#111"/>
+    </g>`;
+
+  return `
+  <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    ${grad}
+    ${labelL}${labelR}
+    <rect x="${pad}" y="${barY}" width="${barW}" height="${barH}" rx="7" fill="url(#g)" opacity="0.95"/>
+    <rect x="${pad}" y="${barY}" width="${barW}" height="${barH}" rx="7" fill="none" stroke="rgba(0,0,0,.22)"/>
+    ${pointer}
+    ${ticks}
+  </svg>`;
+}
+
+function svgToDataUri(svg){
+  const enc = encodeURIComponent(svg).replace(/'/g,"%27").replace(/"/g,"%22");
+  return "data:image/svg+xml;charset=utf-8," + enc;
+}
+
+async function svgToPngDataUrl(svgString, scale=2){
+  // Robust SVG->PNG rasterization for Word-friendly clipboard pastes.
+  // Uses a Blob/objectURL rather than data-URI to reduce browser security quirks.
+  const svg = (svgString || "").trim();
+  const svgWithNs = svg.includes("xmlns=") ? svg : svg.replace("<svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"");
+  const blob = new Blob([svgWithNs], {type:"image/svg+xml"});
+  const url = URL.createObjectURL(blob);
+
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    img.decoding = "async";
+    img.crossOrigin = "anonymous";
+
+    img.onload = ()=>{
+      try{
+        const canvas = document.createElement("canvas");
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        const png = canvas.toDataURL("image/png");
+        URL.revokeObjectURL(url);
+        resolve(png);
+      }catch(e){
+        URL.revokeObjectURL(url);
+        reject(e);
+      }
+    };
+    img.onerror = (e)=>{
+      URL.revokeObjectURL(url);
+      reject(e);
+    };
+
+    img.src = url;
+  });
+}
+
+
+// Try to generate a PNG for Word/Outlook paste; if it fails, return empty string.
+// (Word often does not paste SVG reliably.)
+async function svgToPngOrSvgDataUri(svgString, scale=2){
+  // Try high-quality PNG first; if it fails, retry at lower scale.
+  // As a last resort, return an SVG data URI (may not paste into Word, but keeps browser rendering).
+  const svg = (svgString || "").trim();
+  try{
+    return await svgToPngDataUrl(svg, scale);
+  }catch(e1){
+    try{
+      const retryScale = Math.max(1, Math.round(scale * 0.66));
+      return await svgToPngDataUrl(svg, retryScale);
+    }catch(e2){
+      try{
+        const encoded = encodeURIComponent(svg)
+          .replace(/'/g,"%27")
+          .replace(/"/g,"%22");
+        return "";
+      }catch(e3){
+        return "";
+      }
     }
+  }
+}
 
-    function barsSvg(c){
-      const rows = [
-        ['Upper Arm', c.ua, 4], ['Lower Arm', c.la, 2], ['Wrist', c.w, 3], ['Wrist Twist', c.wt, 2],
-        ['Neck', c.n, 3], ['Trunk', c.t, 3], ['Legs', c.l, 3], ['Modifiers', c.m, 3]
-      ];
-      const body = rows.map((r, i) => {
-        const y = 44 + i*22;
-        const pct = (r[1] / r[2]);
-        return `<text x="10" y="${y+10}" font-size="11">${r[0]}</text>
-          <rect x="130" y="${y}" width="250" height="12" rx="6" fill="#edf2ff"/>
-          <rect x="130" y="${y}" width="${250*pct}" height="12" rx="6" fill="${scoreColor(Math.round(1+pct*6))}"/>
-          <text x="390" y="${y+10}" font-size="11">${r[1]} / ${r[2]}</text>`;
-      }).join('');
-      return `<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg"><text x="10" y="20" font-weight="700" font-size="13">Component Intensity Profile</text>${body}</svg>`;
+
+// Ensure copy assets are ready without breaking the UI if image conversion fails.
+
+async function ensureCopyAssets(){
+  const calc = computeRula();
+  const gaugeSvg = buildGaugeSvg(calc.finalScore);
+  const breakdownSvg = buildBreakdownSvg(calc);
+  const profileSvg = buildProfileSvg(calc);
+  const spiderSvg = buildSpiderSvg(calc);
+
+  // store SVG strings (useful for fallbacks / manual copy)
+  $("summaryBlock").dataset.gaugeSvg = gaugeSvg;
+  $("reportBlock").dataset.gaugeSvg = gaugeSvg;
+  $("reportBlock").dataset.breakdownSvg = breakdownSvg;
+  $("reportBlock").dataset.profileSvg = profileSvg;
+  $("reportBlock").dataset.spiderSvg = spiderSvg;
+
+  // Word-friendly PNG rasters (higher scale for crispness)
+  $("summaryBlock").dataset.gaugeSrc = await svgToPngOrSvgDataUri(gaugeSvg, 2);
+  $("reportBlock").dataset.gaugeSrc = $("summaryBlock").dataset.gaugeSrc;
+
+  $("reportBlock").dataset.breakdownSrc = await svgToPngOrSvgDataUri(breakdownSvg, 1.6);
+  $("reportBlock").dataset.profileSrc   = await svgToPngOrSvgDataUri(profileSvg, 1.6);
+  $("reportBlock").dataset.spiderSrc    = await svgToPngOrSvgDataUri(spiderSvg, 1.6);
+}
+
+
+
+
+/* =========================
+   Breakdown SVG
+   ========================= */
+function buildBreakdownSvg(calc){
+  // Responsive flow diagram
+  const W = 900;
+  let H = 410;
+  const pad = 18;
+
+  const box = (x,y,w,h,title,lines,accent="#00c2d1")=>{
+    const tLines = (lines||[]).map((ln,i)=>`<text x="${x+14}" y="${y+44+i*18}" font-family="Arial" font-size="13" fill="rgba(0,0,0,.85)">${ln}</text>`).join("");
+    return `
+      <g>
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#ffffff" stroke="rgba(0,0,0,.18)"/>
+        <rect x="${x}" y="${y}" width="${w}" height="34" rx="16" fill="rgba(0,194,209,.10)" stroke="none"/>
+        <text x="${x+14}" y="${y+23}" font-family="Arial" font-size="13.5" font-weight="900" fill="${accent}">${title}</text>
+        ${tLines}
+      </g>`;
+  };
+
+  const arrow = (x1,y1,x2,y2)=>{
+    // simple arrow
+    const head = 8;
+    const ang = Math.atan2(y2-y1, x2-x1);
+    const hx1 = x2 - head*Math.cos(ang - Math.PI/6);
+    const hy1 = y2 - head*Math.sin(ang - Math.PI/6);
+    const hx2 = x2 - head*Math.cos(ang + Math.PI/6);
+    const hy2 = y2 - head*Math.sin(ang + Math.PI/6);
+    return `
+      <g>
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
+        <polygon points="${x2},${y2} ${hx1},${hy1} ${hx2},${hy2}" fill="rgba(0,0,0,.35)"/>
+      </g>`;
+  };
+
+  // Color intensity by score
+  const cA = colorAt((calc.tableAFinal-1)/7); // table A 1–8
+  const cB = colorAt((calc.tableBFinal-1)/6); // table B 1–7
+  const cF = colorAt((calc.finalScore-1)/6);
+
+  const g = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <defs>
+      <filter id="ds" x="-20%" y="-30%" width="140%" height="160%">
+        <feDropShadow dx="0" dy="1.6" stdDeviation="1.6" flood-color="rgba(0,0,0,.15)"/>
+      </filter>
+    </defs>
+
+    <rect x="0" y="0" width="${W}" height="${H}" rx="22" fill="#ffffff" stroke="rgba(0,0,0,.10)"/>
+
+    <text x="${pad}" y="30" font-family="Arial" font-size="14" font-weight="900" fill="#0b1220">RULA Scoring Breakdown</text>
+
+    <!-- Group A -->
+    ${box(18, 48, 390, 142, "Group A — Arm & Wrist", [
+      `Upper arm: ${calc.upperArmScore}`,
+      `Lower arm: ${calc.lowerArmScore}`,
+      `Wrist: ${calc.wristScore}`,
+      `Wrist twist: ${calc.wristTwistScore}`,
+      `Combined (A posture): ${calc.groupACombined}`,
+      `Wrist+twist: ${calc.wristCombined}`
+    ])}
+
+    ${box(18, 204, 390, 86, "Table A", [
+      `Raw table score: ${calc.tableARaw}`,
+      `+ Modifiers: ${calc.modifiersTotal}`,
+      `Table A final: ${calc.tableAFinal}`
+    ], cA)}
+
+    <!-- Group B -->
+    ${box(492, 48, 390, 142, "Group B — Neck, Trunk & Legs", [
+      `Neck: ${calc.neckScore}`,
+      `Trunk: ${calc.trunkScore}`,
+      `Legs: ${calc.legsScore}`,
+      `Combined (B posture): ${calc.groupBCombined}`,
+      `Raw table score: ${calc.tableBRaw}`,
+      `Table B final: ${calc.tableBFinal}`
+    ])}
+
+    <!-- Final -->
+    ${box(492, 204, 390, 86, "Final (Table C)", [
+      `Table C: B(${calc.tableBFinal}) × A(${calc.tableAFinal})`,
+      `Final RULA score: ${calc.finalScore}`,
+      `${calc.riskTextShort}`
+    ], cF)}
+
+    <!-- Arrows -->
+    ${arrow(408, 120, 492, 120)}
+    ${arrow(408, 246, 492, 246)}
+    <text x="444" y="114" font-family="Arial" font-size="12" fill="rgba(0,0,0,.55)">compare</text>
+
+    <!-- Modifier badge -->
+    <g filter="url(#ds)">
+      <rect x="376" y="310" width="148" height="66" rx="16" fill="#ffffff" stroke="rgba(0,0,0,.15)"/>
+      <text x="450" y="334" text-anchor="middle" font-family="Arial" font-size="12" font-weight="900" fill="#00c2d1">Modifiers</text>
+      <text x="450" y="354" text-anchor="middle" font-family="Arial" font-size="12" fill="rgba(0,0,0,.75)">Muscle use: +${calc.muscleUseAdj}</text>
+      <text x="450" y="372" text-anchor="middle" font-family="Arial" font-size="12" fill="rgba(0,0,0,.75)">Force/load: +${calc.forceLoadAdj}</text>
+    </g>
+  </svg>`;
+  return g;
+}
+
+
+/* =========================
+   Visual Profile SVG
+   ========================= */
+function buildProfileSvg(calc){
+  const W = 900;
+  const pad = 18;
+  const leftLabelW = 185;
+  const barW = W - pad*2 - leftLabelW - 90; // reserve space for value text
+  const barH = 14;
+  const rowH = 26;
+  const startY = 58;
+
+  const items = [
+    {label:"Upper Arm",   val:calc.upperArmScore,   max:6,  min:1},
+    {label:"Lower Arm",   val:calc.lowerArmScore,   max:3,  min:1},
+    {label:"Wrist",       val:calc.wristScore,      max:4,  min:1},
+    {label:"Wrist Twist", val:calc.wristTwistScore, max:2,  min:1},
+    {label:"Neck",        val:calc.neckScore,       max:6,  min:1},
+    {label:"Trunk",       val:calc.trunkScore,      max:6,  min:1},
+    {label:"Legs",        val:calc.legsScore,       max:3,  min:1},
+    {label:"Modifiers",   val:calc.modifiersTotal,  max:4,  min:0},
+    {label:"Final Score", val:calc.finalScore,      max:7,  min:1}
+  ];
+
+  const H = startY + items.length*rowH + 34;
+
+  const norm = (it)=>{
+    if (it.max === it.min) return 1;
+    if (it.min === 0) return clamp(it.val / it.max, 0, 1);
+    return clamp((it.val - it.min) / (it.max - it.min), 0, 1);
+  };
+
+  const rows = items.map((it, idx)=>{
+    const y = startY + idx*rowH;
+    const n = norm(it);
+    const fillW = Math.max(0, Math.round(barW * n));
+    const x0 = pad + leftLabelW;
+
+    const fillColor = colorAt(n);
+
+    const bg = `<rect x="${x0}" y="${y}" width="${barW}" height="${barH}" rx="7" fill="rgba(0,0,0,.06)" stroke="rgba(0,0,0,.10)"/>`;
+    const fg = `<rect x="${x0}" y="${y}" width="${fillW}" height="${barH}" rx="7" fill="${fillColor}" opacity="0.92"/>`;
+
+    const label = `<text x="${pad}" y="${y+barH-2}" font-family="Arial" font-size="12.5" font-weight="700" fill="rgba(0,0,0,.80)">${escapeHtml(it.label)}</text>`;
+    const valTxt = `<text x="${x0+barW+10}" y="${y+barH-2}" font-family="Arial" font-size="12.5" font-weight="700" fill="rgba(0,0,0,.75)">${it.val} / ${it.max}</text>`;
+
+    // milestone ticks at 25/50/75
+    const ticks = [0.25,0.5,0.75].map(fr=>{
+      const tx = x0 + barW*fr;
+      return `<line x1="${tx}" y1="${y-2}" x2="${tx}" y2="${y+barH+2}" stroke="rgba(0,0,0,.10)" stroke-width="1"/>`;
+    }).join("");
+
+    return `<g>${label}${bg}${ticks}${fg}${valTxt}</g>`;
+  }).join("");
+
+  return `
+  <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <rect x="0" y="0" width="${W}" height="${H}" rx="22" fill="#ffffff" stroke="rgba(0,0,0,.10)"/>
+    <text x="${pad}" y="30" font-family="Arial" font-size="14" font-weight="900" fill="#0b1220">Posture Profile (Component Intensities)</text>
+    <text x="${pad}" y="48" font-family="Arial" font-size="12" fill="rgba(0,0,0,.60)">Bars show each component's relative score within its scoring range.</text>
+    ${rows}
+  </svg>`;
+}
+
+
+
+/* =========================
+   Spider (Radar) SVG
+   ========================= */
+function buildSpiderSvg(calc){
+  const W = 900;
+  const H = 520;
+  const cx = W/2;
+  const cy = H/2 + 24;
+  const R  = 190;
+  const titleY = 30;
+
+  const axes = [
+    {label:"Upper Arm", val:calc.upperArmScore, min:1, max:6},
+    {label:"Lower Arm", val:calc.lowerArmScore, min:1, max:3},
+    {label:"Wrist", val:calc.wristScore, min:1, max:4},
+    {label:"Neck", val:calc.neckScore, min:1, max:6},
+    {label:"Trunk", val:calc.trunkScore, min:1, max:6},
+    {label:"Legs", val:calc.legsScore, min:1, max:3},
+    {label:"Load/Duration", val:calc.modifiersTotal, min:0, max:4},
+  ];
+
+  const n = axes.length;
+  const a0 = -Math.PI/2;
+  const ringFracs = [0.25, 0.5, 0.75, 1.0];
+
+  const norm = (it)=>{
+    if (it.max === it.min) return 1;
+    if (it.min === 0) return clamp(it.val / it.max, 0, 1);
+    return clamp((it.val - it.min) / (it.max - it.min), 0, 1);
+  };
+
+  const pt = (fr, i)=>{
+    const ang = a0 + i * (2*Math.PI/n);
+    return [cx + fr*R*Math.cos(ang), cy + fr*R*Math.sin(ang)];
+  };
+
+  // Grid rings
+  const rings = ringFracs.map(fr=>{
+    const pts = axes.map((_,i)=>{
+      const [x,y] = pt(fr,i);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+    return `<polygon points="${pts}" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1"/>`;
+  }).join("");
+
+  // Axes lines + labels
+  const axesLines = axes.map((it,i)=>{
+    const [x2,y2] = pt(1.0,i);
+    const [xl,yl] = pt(1.15,i);
+    const ang = a0 + i*(2*Math.PI/n);
+    const anchor = Math.cos(ang) > 0.25 ? "start" : (Math.cos(ang) < -0.25 ? "end" : "middle");
+    const baseStyle = `font-family:Arial; font-size:12px; font-weight:700; fill:rgba(0,0,0,.78);`;
+    const label = it.label;
+    // simple wrap for longer labels
+    const parts = label.split(" ");
+    let tspans = "";
+    if (label.length > 12 && parts.length > 1){
+      const mid = Math.ceil(parts.length/2);
+      const l1 = parts.slice(0,mid).join(" ");
+      const l2 = parts.slice(mid).join(" ");
+      tspans = `<tspan x="${xl.toFixed(1)}" dy="0">${escapeHtml(l1)}</tspan><tspan x="${xl.toFixed(1)}" dy="14">${escapeHtml(l2)}</tspan>`;
+    }else{
+      tspans = `<tspan x="${xl.toFixed(1)}" dy="0">${escapeHtml(label)}</tspan>`;
     }
+    return `
+      <g>
+        <line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(0,0,0,.12)" stroke-width="1"/>
+        <text x="${xl.toFixed(1)}" y="${yl.toFixed(1)}" text-anchor="${anchor}" style="${baseStyle}">${tspans}</text>
+      </g>`;
+  }).join("");
 
-    function spiderSvg(c){
-      const vals = [c.ua/4, c.la/2, c.w/3, c.n/3, c.t/3, c.l/3, c.m/3];
-      const labels = ['Upper Arm','Lower Arm','Wrist','Neck','Trunk','Legs','Load'];
-      const cx=230, cy=210, R=145, n=vals.length;
-      const p = (r,i)=>{ const a=-Math.PI/2+i*(2*Math.PI/n); return [cx+r*R*Math.cos(a), cy+r*R*Math.sin(a)]; };
-      const rings = [0.25,0.5,0.75,1].map(fr=>`<polygon points="${vals.map((_,i)=>{const q=p(fr,i);return q[0]+','+q[1]}).join(' ')}" fill="none" stroke="#d8e0f0"/>`).join('');
-      const spokes = vals.map((_,i)=>{ const e=p(1,i), l=p(1.14,i); return `<line x1="${cx}" y1="${cy}" x2="${e[0]}" y2="${e[1]}" stroke="#d8e0f0"/><text x="${l[0]}" y="${l[1]}" font-size="11" text-anchor="middle">${labels[i]}</text>`; }).join('');
-      const area = `<polygon points="${vals.map((v,i)=>{const q=p(v,i);return q[0]+','+q[1]}).join(' ')}" fill="${scoreColor(c.score)}55" stroke="${scoreColor(c.score)}" stroke-width="2"/>`;
-      return `<svg viewBox="0 0 460 430" xmlns="http://www.w3.org/2000/svg"><text x="10" y="20" font-weight="700" font-size="13">Spider Chart — Exposure Profile</text>${rings}${spokes}${area}</svg>`;
-    }
+  // Data polygon
+  const scoreColor = colorAt((calc.finalScore-1)/6);
+  const dataPts = axes.map((it,i)=>{
+    const [x,y] = pt(norm(it), i);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const dots = axes.map((it,i)=>{
+    const [x,y] = pt(norm(it), i);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.2" fill="${scoreColor}" stroke="#fff" stroke-width="1.4"/>`;
+  }).join("");
 
-    function heatTable(c){
-      const components = [c.ua, c.la, c.w, c.wt, c.n, c.t, c.l, c.m];
-      const labels = ['UA','LA','W','WT','N','T','L','M'];
-      const cell = (v) => `background:${v>=3?'#ffd4d8':v===2?'#fff2d1':'#d9f5e8'}; font-weight:700;`;
-      return `<div><div style="font-weight:700;margin-bottom:5px">Risk Heat Matrix (Quick Visual Table)</div>
-      <table><tr>${labels.map(l=>`<th>${l}</th>`).join('')}</tr><tr>${components.map(v=>`<td style="${cell(v)}">${v}</td>`).join('')}</tr></table></div>`;
-    }
+  // Ring labels (0/50/100%)
+  const ringLabels = ringFracs.slice(0,3).map(fr=>{
+    const val = Math.round(fr*100);
+    return `<text x="${(cx+4).toFixed(1)}" y="${(cy - fr*R + 4).toFixed(1)}" font-family="Arial" font-size="11" fill="rgba(0,0,0,.45)">${val}%</text>`;
+  }).join("");
 
-    function buildReport(c){
-      const meta = { a: $("assessor").value || '—', d: $("assessmentDate").value || '—', l: $("location").value || '—', t: $("task").value || '—', n: $("notes").value || '—' };
-      return `<div><div style="font-size:13pt;font-weight:900">RULA Ergonomic Assessment Report</div>
-      <div class="section">A. Metadata</div>
-      <table><tr><th>Assessor</th><th>Date</th><th>Location</th><th>Task</th></tr><tr><td>${meta.a}</td><td>${meta.d}</td><td>${meta.l}</td><td>${meta.t}</td></tr></table>
-      <div class="section">B. Summary</div>
-      <div><b style="color:${scoreColor(c.score)}">Final RULA Score: ${c.score}</b> · Risk: ${riskText(c.score)}</div>
-      <div class="section">C. Executive Data Table</div>
-      <table><tr><th>Upper Arm</th><th>Lower Arm</th><th>Wrist</th><th>Wrist Twist</th><th>Neck</th><th>Trunk</th><th>Legs</th><th>Modifiers</th></tr>
-      <tr><td>${c.ua}</td><td>${c.la}</td><td>${c.w}</td><td>${c.wt}</td><td>${c.n}</td><td>${c.t}</td><td>${c.l}</td><td>${c.m}</td></tr></table>
-      <div class="section">D. Notes</div><div>${meta.n.replace(/\n/g,'<br>')}</div></div>`;
-    }
+  return `
+  <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <rect x="0" y="0" width="${W}" height="${H}" rx="22" fill="#ffffff" stroke="rgba(0,0,0,.10)"/>
+    <text x="18" y="${titleY}" font-family="Arial" font-size="14" font-weight="900" fill="#0b1220">Exposure Spider Chart (normalized)</text>
+    <text x="18" y="${titleY+18}" font-family="Arial" font-size="12" fill="rgba(0,0,0,.60)">Each axis shows how close the selected posture/exposure is to the top of its scoring range.</text>
 
-    async function copyHtml(html){
-      try {
-        if (navigator.clipboard && window.ClipboardItem) {
-          await navigator.clipboard.write([new ClipboardItem({"text/html": new Blob([html], {type: "text/html"}), "text/plain": new Blob([html.replace(/<[^>]+>/g, ' ')], {type: "text/plain"})})]);
-          return true;
+    <g>
+      ${rings}
+      ${ringLabels}
+      ${axesLines}
+
+      <polygon points="${dataPts}" fill="${scoreColor}" opacity="0.22" stroke="${scoreColor}" stroke-width="2.2"/>
+      ${dots}
+    </g>
+
+    <g>
+      <rect x="${W-248}" y="18" width="220" height="62" rx="14" fill="#ffffff" stroke="rgba(0,0,0,.12)"/>
+      <text x="${W-138}" y="40" text-anchor="middle" font-family="Arial" font-size="12" font-weight="900" fill="#00c2d1">Final RULA</text>
+      <text x="${W-138}" y="62" text-anchor="middle" font-family="Arial" font-size="18" font-weight="900" fill="${scoreColor}">${calc.finalScore}</text>
+    </g>
+  </svg>`;
+}
+
+
+/* =========================
+   RULA Calculation (matches your original file)
+   ========================= */
+function computeRula(){
+  // Group A
+  const upperArmBase = parseInt($("upperArm").value, 10);
+  const upperArmAdj = getMultiAdjustSum($("upperArmAdjust"));
+  let upperArmScore = clamp(upperArmBase + upperArmAdj, 1, 6);
+
+  const lowerArmBase = parseInt($("lowerArm").value, 10);
+  const lowerArmAdj = parseInt($("lowerArmAdjust").value, 10) || 0;
+  let lowerArmScore = clamp(lowerArmBase + lowerArmAdj, 1, 3);
+
+  const wristBase = parseInt($("wrist").value, 10);
+  const wristAdj = parseInt($("wristAdjust").value, 10) || 0;
+  let wristScore = clamp(wristBase + wristAdj, 1, 4);
+
+  const wristTwistScore = parseInt($("wristTwist").value, 10);
+
+  const groupACombined = clamp(upperArmScore + lowerArmScore, 1, 9);
+  const wristCombined = clamp(wristScore + wristTwistScore - 1, 1, 6);
+
+  const tableARaw = TABLE_A[groupACombined - 1][wristCombined - 1];
+
+  // Group B
+  const neckBase = parseInt($("neck").value, 10);
+  const neckAdj = getMultiAdjustSum($("neckAdjust"));
+  let neckScore = clamp(neckBase + neckAdj, 1, 6);
+
+  const trunkBase = parseInt($("trunk").value, 10);
+  const trunkAdj = getMultiAdjustSum($("trunkAdjust"));
+  let trunkScore = clamp(trunkBase + trunkAdj, 1, 6);
+
+  const legsScore = parseInt($("legs").value, 10);
+
+  const groupBCombined = clamp(neckScore + trunkScore, 1, 9);
+  const legsIndex = clamp(legsScore, 1, 3);
+
+  const tableBRaw = TABLE_B[groupBCombined - 1][legsIndex - 1];
+
+  // Modifiers
+  const muscleUseAdj = parseInt($("muscleUse").value, 10) || 0;
+  const forceLoadAdj = parseInt($("forceLoad").value, 10) || 0;
+  const modifiersTotal = muscleUseAdj + forceLoadAdj;
+
+  const tableAFinal = clamp(tableARaw + modifiersTotal, 1, 8);
+  const tableBFinal = clamp(tableBRaw + modifiersTotal, 1, 7);
+
+  const finalScore = TABLE_C[tableBFinal - 1][tableAFinal - 1];
+
+  // Risk band
+  let riskText = "";
+  let riskTextShort = "";
+  let priority = "";
+  if (finalScore <= 2){
+    riskText = "Negligible risk (acceptable posture)";
+    riskTextShort = "Acceptable posture";
+    priority = "No immediate action required; monitor if conditions change.";
+  } else if (finalScore <= 4){
+    riskText = "Low risk — further investigation, change may be needed";
+    riskTextShort = "Further investigation";
+    priority = "Consider changes; investigate tasks with similar exposure.";
+  } else if (finalScore <= 6){
+    riskText = "Medium risk — investigate and change soon";
+    riskTextShort = "Change soon";
+    priority = "Plan and implement ergonomic improvements in the near term.";
+  } else {
+    riskText = "High risk — investigate and change immediately";
+    riskTextShort = "Immediate action";
+    priority = "Immediate action required; redesign task/controls as priority.";
+  }
+
+  return {
+    upperArmScore, lowerArmScore, wristScore, wristTwistScore,
+    neckScore, trunkScore, legsScore,
+    groupACombined, wristCombined, groupBCombined, legsIndex,
+    tableARaw, tableBRaw,
+    muscleUseAdj, forceLoadAdj, modifiersTotal,
+    tableAFinal, tableBFinal, finalScore,
+    riskText, riskTextShort, priority
+  };
+}
+
+/* =========================
+   Risk driver generation
+   ========================= */
+function generateDrivers(calc){
+  const drivers = [];
+  if (calc.upperArmScore >= 3) drivers.push("Elevated upper arm posture (shoulder flexion/abduction).");
+  if (Array.from($("upperArmAdjust").selectedOptions).some(o=>o.textContent.includes("Shoulder raised"))) drivers.push("Shoulder elevation (upper trapezius loading).");
+  if (Array.from($("upperArmAdjust").selectedOptions).some(o=>o.textContent.includes("abducted"))) drivers.push("Upper arm abduction / reaching away from torso.");
+  if (calc.lowerArmScore >= 2) drivers.push("Non-neutral elbow posture (<60° or >100°).");
+  if (parseInt($("lowerArmAdjust").value,10)===1) drivers.push("Work performed across midline or out to the side.");
+  if (calc.wristScore >= 3) drivers.push("Extreme wrist flexion/extension (≥30°).");
+  if (parseInt($("wristAdjust").value,10)===1) drivers.push("Wrist deviation (ulnar/radial).");
+  if (calc.wristTwistScore === 2) drivers.push("End-range forearm pronation/supination.");
+  if (calc.neckScore >= 3) drivers.push("Neck flexion >20° and/or extension.");
+  if ($("neckAdjust").selectedOptions.length) drivers.push("Neck twist and/or side-bend.");
+  if (calc.trunkScore >= 3) drivers.push("Trunk flexion >60° and/or extension/side-bend.");
+  if ($("trunkAdjust").selectedOptions.length) drivers.push("Trunk twist and/or side-bend.");
+  if (calc.legsScore >= 3) drivers.push("Unstable lower-limb support / uneven stance.");
+  if (calc.muscleUseAdj === 1) drivers.push("Static/repetitive muscle use (sustained posture or frequent repetition).");
+  if (calc.forceLoadAdj >= 2) drivers.push("Forceful exertions and/or sustained loading.");
+  // unique and cap
+  const uniq = [];
+  for (const d of drivers){
+    if (!uniq.includes(d)) uniq.push(d);
+  }
+  return uniq.slice(0, 8);
+}
+
+function generateRecs(calc){
+  const recs = [];
+  // simple tailored set
+  if (calc.upperArmScore >= 3 || Array.from($("upperArmAdjust").selectedOptions).length){
+    recs.push("Bring work closer to elbow height (adjust fixture height, reposition parts presentation, or use angled bins) to reduce shoulder elevation/abduction.");
+  }
+  if (calc.wristScore >= 3 || parseInt($("wristAdjust").value,10)===1 || calc.wristTwistScore===2){
+    recs.push("Optimize hand/wrist posture (reorient parts, change handle design, add forearm support, or use inline/pistol-grip tools where appropriate).");
+  }
+  if (calc.neckScore >= 3 || calc.trunkScore >= 3){
+    recs.push("Reduce neck/trunk flexion (raise work surface, use tilt fixtures, bring visual targets to eye level, or rotate/angle task to neutral posture).");
+  }
+  if (calc.forceLoadAdj >= 2){
+    recs.push("Reduce force demands (mechanical assist, counterbalance, better grip surfaces, lower-friction guides, or powered tools).");
+  }
+  if (calc.muscleUseAdj === 1){
+    recs.push("Address duration/repetition (micro-breaks, task rotation, batch sizing, or cadence limits) while engineering changes are implemented.");
+  }
+  if (calc.legsScore >= 3){
+    recs.push("Improve footing and stability (anti-fatigue matting, reposition foot placement, or adjust stance requirements).");
+  }
+  if (!recs.length){
+    recs.push("Maintain controls and monitor for changes in posture, force, or duration.");
+  }
+  return recs.slice(0, 8);
+}
+
+/* =========================
+   Appendix table builders
+   ========================= */
+function buildMatrixTable(matrix, hlRow, hlCol, colHeaders, rowHeaders){
+  const thead = `<tr>${[""].concat(colHeaders).map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr>`;
+  const rows = matrix.map((r,i)=>{
+    const cells = r.map((v,j)=>{
+      const cls = (i===hlRow && j===hlCol) ? "hl" : "";
+      return `<td class="${cls}">${v}</td>`;
+    }).join("");
+    const rh = rowHeaders ? `<th>${escapeHtml(rowHeaders[i])}</th>` : `<th>${i+1}</th>`;
+    return `<tr>${rh}${cells}</tr>`;
+  }).join("");
+  return `<table>${thead}${rows}</table>`;
+}
+
+function buildTableC(matrix, hlRow, hlCol){
+  const colH = ["A1","A2","A3","A4","A5","A6","A7","A8"];
+  const rowH = ["B1","B2","B3","B4","B5","B6","B7"];
+  return buildMatrixTable(matrix, hlRow, hlCol, colH, rowH);
+}
+
+
+// Word-safe table builders (inline styles so formatting survives copy/paste)
+function buildMatrixTableInline(matrix, hlRow, hlCol, colHeaders, rowHeaders){
+  const thStyle = "border:1px solid #666; padding:4px 6px; background:#f2f5fb; font-weight:700; text-align:center; vertical-align:middle;";
+  const tdStyle = "border:1px solid #666; padding:4px 6px; text-align:center; vertical-align:middle;";
+  const hlStyle = tdStyle + " background:#cffff3; outline:2px solid #00c2d1;";
+
+  const thead = `<tr>${[""].concat(colHeaders).map(h=>`<th style="${thStyle}">${escapeHtml(h)}</th>`).join("")}</tr>`;
+  const rows = matrix.map((r,i)=>{
+    const cells = r.map((v,j)=>{
+      const s = (i===hlRow && j===hlCol) ? hlStyle : tdStyle;
+      return `<td style="${s}">${v}</td>`;
+    }).join("");
+    const rh = rowHeaders ? `<th style="${thStyle}">${escapeHtml(rowHeaders[i])}</th>` : `<th style="${thStyle}">${i+1}</th>`;
+    return `<tr>${rh}${cells}</tr>`;
+  }).join("");
+
+  return `<table style="border-collapse:collapse; width:100%; font-size:10.5pt;">${thead}${rows}</table>`;
+}
+
+function buildTableCInline(matrix, hlRow, hlCol){
+  const colH = ["A1","A2","A3","A4","A5","A6","A7","A8"];
+  const rowH = ["B1","B2","B3","B4","B5","B6","B7"];
+  return buildMatrixTableInline(matrix, hlRow, hlCol, colH, rowH);
+}
+
+
+/* =========================
+   UI Update
+   ========================= */
+async function updateAll(){
+  const calc = computeRula();
+
+  // score output
+  $("finalScore").textContent = String(calc.finalScore);
+
+  $("riskText").textContent = calc.riskText;
+  $("riskTag").textContent = calc.riskTextShort;
+  $("riskTag").style.borderColor = colorAt((calc.finalScore-1)/6);
+  $("riskTag").style.background = "rgba(0,0,0,.02)";
+
+  // trace
+  $("outGroupA").textContent = String(calc.groupACombined);
+  $("outWristCombo").textContent = String(calc.wristCombined);
+  $("outTableA").textContent = `${calc.tableARaw} → ${calc.tableAFinal}`;
+  $("outGroupB").textContent = String(calc.groupBCombined);
+  $("outTableB").textContent = `${calc.tableBRaw} → ${calc.tableBFinal}`;
+  $("outMods").textContent = `Muscle +${calc.muscleUseAdj}, Force +${calc.forceLoadAdj} (Total +${calc.modifiersTotal})`;
+
+  // drivers (non-bold)
+  const drivers = generateDrivers(calc);
+  $("driverList").innerHTML = drivers.length ? drivers.map(d=>`<li>${escapeHtml(d)}</li>`).join("") : "<li>—</li>";
+
+  // gauge render
+  const gaugeSvg = buildGaugeSvg(calc.finalScore);
+  $("gaugeHost").innerHTML = gaugeSvg;
+
+  // report metadata
+  $("rAssessor").textContent = $("assessor").value || "—";
+  $("rDate").textContent = $("assessmentDate").value || "—";
+  $("rLocation").textContent = $("location").value || "—";
+  $("rTask").textContent = $("task").value || "—";
+  $("rNotes").innerHTML = escapeHtml($("notes").value || "—").replace(/\n/g,"<br>");
+
+  // score sentence (Arial 11pt bold; color matches exact gauge point)
+  const scoreColor = colorAt((calc.finalScore-1)/6);
+  $("rScoreSentence").textContent = `Final RULA score: ${calc.finalScore}`;
+  $("rScoreSentence").style.color = scoreColor;
+  $("rScoreSentence").style.fontWeight = "700";
+  $("rScoreSentence").style.fontFamily = "Arial, sans-serif";
+  $("rScoreSentence").style.fontSize = "11pt";
+
+  $("rRiskBand").textContent = `Risk band: ${calc.riskText} · Investigation priority: ${calc.priority}`;
+
+  // drivers in report
+  $("rDrivers").innerHTML = drivers.length ? drivers.map(d=>`<li>${escapeHtml(d)}</li>`).join("") : "<li>—</li>";
+
+  // recs
+  const recs = generateRecs(calc);
+  $("rRecs").innerHTML = recs.map(r=>`<li>${escapeHtml(r)}</li>`).join("");
+
+  // breakdown chart
+  const breakdownSvg = buildBreakdownSvg(calc);
+  $("breakdownHost").innerHTML = breakdownSvg;
+
+  // posture profile chart
+  const profileSvg = buildProfileSvg(calc);
+  const ph = $("profileHost");
+  if (ph) ph.innerHTML = profileSvg;
+
+  // spider (radar) chart
+  const spiderSvg = buildSpiderSvg(calc);
+  const sh = $("spiderHost");
+  if (sh) sh.innerHTML = spiderSvg;
+
+  // Appendix
+  $("appInputs").innerHTML = `
+    <div class="kv" style="grid-template-columns: 210px 1fr;">
+      <div class="k">Upper arm</div><div class="v">${escapeHtml($("upperArm").selectedOptions[0].textContent)}</div>
+      <div class="k">Upper arm adjustments</div><div class="v">${Array.from($("upperArmAdjust").selectedOptions).map(o=>escapeHtml(o.textContent)).join(", ") || "None"}</div>
+      <div class="k">Lower arm</div><div class="v">${escapeHtml($("lowerArm").selectedOptions[0].textContent)}</div>
+      <div class="k">Lower arm adjustment</div><div class="v">${escapeHtml($("lowerArmAdjust").selectedOptions[0].textContent)}</div>
+      <div class="k">Wrist</div><div class="v">${escapeHtml($("wrist").selectedOptions[0].textContent)}</div>
+      <div class="k">Wrist deviation</div><div class="v">${escapeHtml($("wristAdjust").selectedOptions[0].textContent)}</div>
+      <div class="k">Wrist twist</div><div class="v">${escapeHtml($("wristTwist").selectedOptions[0].textContent)}</div>
+      <div class="k">Neck</div><div class="v">${escapeHtml($("neck").selectedOptions[0].textContent)}</div>
+      <div class="k">Neck adjustments</div><div class="v">${Array.from($("neckAdjust").selectedOptions).map(o=>escapeHtml(o.textContent)).join(", ") || "None"}</div>
+      <div class="k">Trunk</div><div class="v">${escapeHtml($("trunk").selectedOptions[0].textContent)}</div>
+      <div class="k">Trunk adjustments</div><div class="v">${Array.from($("trunkAdjust").selectedOptions).map(o=>escapeHtml(o.textContent)).join(", ") || "None"}</div>
+      <div class="k">Legs</div><div class="v">${escapeHtml($("legs").selectedOptions[0].textContent)}</div>
+      <div class="k">Muscle use</div><div class="v">${escapeHtml($("muscleUse").selectedOptions[0].textContent)}</div>
+      <div class="k">Force / load</div><div class="v">${escapeHtml($("forceLoad").selectedOptions[0].textContent)}</div>
+    </div>`;
+
+  $("appTrace").innerHTML = `
+    <div class="kv" style="grid-template-columns: 260px 1fr;">
+      <div class="k">Upper arm score (base + adj)</div><div class="v">${calc.upperArmScore}</div>
+      <div class="k">Lower arm score (base + adj)</div><div class="v">${calc.lowerArmScore}</div>
+      <div class="k">Wrist score (base + deviation)</div><div class="v">${calc.wristScore}</div>
+      <div class="k">Wrist twist score</div><div class="v">${calc.wristTwistScore}</div>
+      <div class="k">Group A combined (clamped 1–9)</div><div class="v">${calc.groupACombined}</div>
+      <div class="k">Wrist+twist combined (clamped 1–6)</div><div class="v">${calc.wristCombined}</div>
+      <div class="k">Table A raw → final (add mods)</div><div class="v">${calc.tableARaw} → ${calc.tableAFinal}</div>
+      <div class="k">Neck score (base + adj)</div><div class="v">${calc.neckScore}</div>
+      <div class="k">Trunk score (base + adj)</div><div class="v">${calc.trunkScore}</div>
+      <div class="k">Legs score</div><div class="v">${calc.legsScore}</div>
+      <div class="k">Group B combined (clamped 1–9)</div><div class="v">${calc.groupBCombined}</div>
+      <div class="k">Table B raw → final (add mods)</div><div class="v">${calc.tableBRaw} → ${calc.tableBFinal}</div>
+      <div class="k">Table C lookup (B row × A col)</div><div class="v">B${calc.tableBFinal} × A${calc.tableAFinal} → Final ${calc.finalScore}</div>
+    </div>`;
+
+  // Table highlight indices (0-based)
+  const aRow = calc.groupACombined - 1;
+  const aCol = calc.wristCombined - 1;
+  const bRow = calc.groupBCombined - 1;
+  const bCol = calc.legsIndex - 1;
+  const cRow = calc.tableBFinal - 1;
+  const cCol = calc.tableAFinal - 1;
+
+  $("appTableA").innerHTML = buildMatrixTable(TABLE_A, aRow, aCol,
+    ["1","2","3","4","5","6"],
+    ["A1","A2","A3","A4","A5","A6","A7","A8","A9"]
+  );
+
+  $("appTableB").innerHTML = buildMatrixTable(TABLE_B, bRow, bCol,
+    ["Legs 1","Legs 2","Legs 3"],
+    ["B1","B2","B3","B4","B5","B6","B7","B8","B9"]
+  );
+
+  $("appTableC").innerHTML = buildTableC(TABLE_C, cRow, cCol);
+  // Cache SVG strings for copy operations (PNG generation happens only when copying; with safe fallback)
+  $("summaryBlock").dataset.gaugeSvg = gaugeSvg;
+  $("reportBlock").dataset.gaugeSvg = gaugeSvg;
+  $("reportBlock").dataset.breakdownSvg = breakdownSvg;
+  $("reportBlock").dataset.profileSvg = profileSvg;
+  $("reportBlock").dataset.spiderSvg = spiderSvg;
+
+  // In-report gauge preview (inline SVG to avoid any clipboard/canvas constraints)
+  $("reportGaugePngHost").innerHTML = gaugeSvg;
+}
+
+/* =========================
+   Clipboard copies (Word-friendly)
+   ========================= */
+
+async function waitForImages(root, timeoutMs=9000){
+  // Ensures images are decoded before copy (important for Word pastes).
+  try{
+    const imgs = Array.from(root.querySelectorAll("img") || []);
+    if (!imgs.length) return;
+
+    const start = Date.now();
+
+    await Promise.race([
+      Promise.all(imgs.map(img => new Promise(res=>{
+        const done = ()=>res();
+
+        const decodeOrDone = ()=>{
+          try{
+            if (img.decode) img.decode().then(done).catch(done);
+            else done();
+          }catch(_){ done(); }
+        };
+
+        if (img.complete && img.naturalWidth > 0){
+          decodeOrDone();
+          return;
         }
-      } catch (_) {}
-      const holder = document.createElement('div');
-      holder.contentEditable = 'true';
-      holder.style.position = 'fixed'; holder.style.left = '-9999px';
-      holder.innerHTML = html; document.body.appendChild(holder);
-      const r = document.createRange(); r.selectNodeContents(holder);
-      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      const ok = document.execCommand('copy'); holder.remove(); s.removeAllRanges();
-      return ok;
+
+        img.addEventListener("load", decodeOrDone, {once:true});
+        img.addEventListener("error", done, {once:true});
+
+        // hard timeout per image
+        const t = setInterval(()=>{
+          if (Date.now() - start > timeoutMs){
+            clearInterval(t);
+            done();
+          }
+        }, 250);
+      }))),
+      new Promise(res=>setTimeout(res, timeoutMs))
+    ]);
+  }catch(_){}
+}
+
+async function copyHtml(html){
+  // 1) Selection-based copy first (best Word compatibility; works for file://)
+  try{
+    const holder = document.createElement("div");
+    holder.setAttribute("contenteditable","true");
+    holder.style.position = "fixed";
+    holder.style.left = "-10000px";
+    holder.style.top = "0";
+    holder.style.width = "7.2in";
+    holder.style.minHeight = "2in";
+    holder.style.maxHeight = "10in";
+    holder.style.overflow = "auto";
+    holder.style.opacity = "1";
+    holder.style.background = "#ffffff";
+    holder.innerHTML = html;
+    document.body.appendChild(holder);
+    holder.focus();
+
+    // Allow layout + image loading/decoding
+    await new Promise(r=>requestAnimationFrame(()=>r()));
+    await waitForImages(holder, 9000);
+
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(holder);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    const ok = document.execCommand("copy");
+    sel.removeAllRanges();
+    holder.remove();
+    if (ok) return true;
+  }catch(_){
+    // fall through
+  }
+
+  // 2) Modern clipboard API (good fidelity, but can be blocked in file:// or strict environments)
+  if (navigator.clipboard && window.ClipboardItem) {
+    try{
+      const blobHtml = new Blob([html], {type:"text/html"});
+      const blobText = new Blob([htmlToText(html)], {type:"text/plain"});
+      await navigator.clipboard.write([new ClipboardItem({"text/html": blobHtml, "text/plain": blobText})]);
+      return true;
+    }catch(_){
+      // fall back
     }
+  }
 
-    function refresh(){
-      const c = compute();
-      const color = scoreColor(c.score);
-      $("finalScore").textContent = c.score;
-      $("riskTag").textContent = `${riskText(c.score)} risk`;
-      $("riskTag").style.borderColor = color;
-      $("gaugeHost").innerHTML = gaugeSvg(c.score);
-      $("barHost").innerHTML = barsSvg(c);
-      $("spiderHost").innerHTML = spiderSvg(c);
-      $("heatHost").innerHTML = heatTable(c);
-      $("reportBlock").innerHTML = buildReport(c);
+  // 3) Plain text last resort
+  try{
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(htmlToText(html));
+      return true;
     }
+  }catch(_){}
 
-    $("btnCalc").addEventListener('click', refresh);
-    [...document.querySelectorAll('input,select,textarea')].forEach(el=>{ el.addEventListener('change', refresh); el.addEventListener('input', refresh); });
+  // 4) Manual fallback: open a selectable panel so the user can press Ctrl/Cmd+C
+  manualCopyFallback(html);
+  return false;
+}
 
-    $("copySummary").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("gaugeHost").innerHTML}${$("heatHost").innerHTML}<p><b>Final score: ${$("finalScore").textContent}</b></p></div>`); toast(ok? 'Summary copied':'Copy failed'); });
-    $("copyReport").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("reportBlock").innerHTML}${$("barHost").innerHTML}${$("spiderHost").innerHTML}</div>`); toast(ok? 'Report copied':'Copy failed'); });
-    $("copyTables").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("heatHost").innerHTML}${$("reportBlock").querySelector('table:last-of-type').outerHTML}</div>`); toast(ok? 'Data tables copied':'Copy failed'); });
+function manualCopyFallback(html){
+  let overlay = document.getElementById("copyFallbackOverlay");
+  if (!overlay){
+    overlay = document.createElement("div");
+    overlay.id = "copyFallbackOverlay";
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.background = "rgba(0,0,0,.45)";
+    overlay.style.zIndex = "99999";
+    overlay.style.display = "none";
 
-    if (!$("assessmentDate").value) $("assessmentDate").value = new Date().toISOString().slice(0,10);
-    refresh();
-  </script>
+    overlay.innerHTML = `
+      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(980px,92vw); max-height:86vh; background:#fff; border:1px solid rgba(0,0,0,.18); border-radius:16px; box-shadow:0 18px 60px rgba(0,0,0,.25); overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-bottom:1px solid rgba(0,0,0,.12); font-family:Arial,sans-serif;">
+          <div style="font-weight:800;">Copy fallback</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="copyFallbackSelect" style="cursor:pointer; border:1px solid rgba(0,0,0,.18); background:#f5f7fb; padding:6px 10px; border-radius:10px; font-weight:700;">Select all</button>
+            <button id="copyFallbackClose" style="cursor:pointer; border:1px solid rgba(0,0,0,.18); background:#ffffff; padding:6px 10px; border-radius:10px; font-weight:700;">Close</button>
+          </div>
+        </div>
+        <div style="padding:10px 12px; font-family:Arial,sans-serif; font-size:11pt; color:#000;">
+          <div style="margin-bottom:8px; color:#333;">Clipboard is blocked by your browser/security settings. The content below is selectable—click <b>Select all</b> then press <b>Ctrl+C</b> (Windows) or <b>Cmd+C</b> (Mac).</div>
+          <div id="copyFallbackContent" contenteditable="true" style="border:1px solid rgba(0,0,0,.18); border-radius:12px; padding:10px; overflow:auto; max-height:62vh; background:#fff;"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (e)=>{
+      if (e.target === overlay) overlay.style.display = "none";
+    });
+
+    overlay.querySelector("#copyFallbackClose").addEventListener("click", ()=> overlay.style.display = "none");
+    overlay.querySelector("#copyFallbackSelect").addEventListener("click", ()=>{
+      const content = overlay.querySelector("#copyFallbackContent");
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(content);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      content.focus();
+    });
+  }
+
+  overlay.style.display = "block";
+  const content = overlay.querySelector("#copyFallbackContent");
+  content.innerHTML = html;
+
+  // auto-select to make the next Ctrl/Cmd+C easy
+  setTimeout(()=>{
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(content);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    content.focus();
+  }, 0);
+}
+
+function htmlToText(html){
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return (tmp.innerText || tmp.textContent || "").trim();
+}
+
+
+function wordFigure(title, imgSrc, svgFallback, caption="", widthIn="6.5in"){
+  // Word-friendly figure block: fixed (page-safe) width, inline styling, and centered layout.
+  const safeTitle = escapeHtml(title || "");
+  const safeCap = caption ? escapeHtml(caption) : "";
+  const figureW = widthIn || "6.5in";
+
+  const imgStyle = `width:100%; height:auto; display:block; margin:0 auto; border:1px solid #c9d3e6;`;
+  const fig = imgSrc
+    ? `<img src="${imgSrc}" alt="${safeTitle}" style="${imgStyle}" />`
+    : (svgFallback ? `<div style="width:100%; overflow:hidden;">${svgFallback}</div>` : "<div>—</div>");
+
+  return `
+    <table style="border-collapse:collapse; width:${figureW}; margin:0 auto; mso-table-lspace:0pt; mso-table-rspace:0pt; table-layout:fixed;">
+      <tr>
+        <td style="border:1px solid #c9d3e6; padding:10px; background:#ffffff; width:${figureW};">
+          <div style="font-weight:900; font-size:11.5pt; color:#00c2d1; margin:0 0 6px 0;">${safeTitle}</div>
+          ${fig}
+          ${safeCap ? `<div style="margin-top:6px; font-size:10pt; color:#333;">${safeCap}</div>` : ``}
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+
+
+function buildSummaryHtml(){
+  const calc = computeRula();
+  const scoreColor = colorAt((calc.finalScore-1)/6);
+  const drivers = generateDrivers(calc);
+  const gaugeSrc = $("summaryBlock").dataset.gaugeSrc || "";
+  const gaugeSvg = $("summaryBlock").dataset.gaugeSvg || "";
+
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    <div style="font-weight:700; font-size:11pt; color:${scoreColor};">Final RULA score: ${calc.finalScore}</div>
+    <div style="margin-top:2px;">Risk band: <b>${escapeHtml(calc.riskText)}</b></div>
+    ${gaugeSrc ? `<div style="margin:8px 0 10px;"><img src="${gaugeSrc}" alt="RULA gauge" style="width:6.5in; max-width:6.5in; height:auto; display:block;" /></div>` : (gaugeSvg ? `<div style="margin:8px 0 10px;">${gaugeSvg}</div>` : "")}
+    <div style="font-weight:700; margin-top:6px;">Primary Risk Drivers</div>
+    <ul style="margin:6px 0 0 18px; padding:0; font-weight:400;">
+      ${drivers.length ? drivers.map(d=>`<li style="margin:2px 0; font-weight:400;">${escapeHtml(d)}</li>`).join("") : `<li style="font-weight:400;">—</li>`}
+    </ul>
+  </div>`;
+}
+
+function buildReportHtml(){
+  const calc = computeRula();
+  const scoreColor = colorAt((calc.finalScore-1)/6);
+  const drivers = generateDrivers(calc);
+  const recs = generateRecs(calc);
+
+  const gaugeSrc = $("reportBlock").dataset.gaugeSrc || "";
+  const breakdownSrc = $("reportBlock").dataset.breakdownSrc || "";
+  const breakdownSvg = $("reportBlock").dataset.breakdownSvg || "";
+  const profileSrc = $("reportBlock").dataset.profileSrc || "";
+  const profileSvg = $("reportBlock").dataset.profileSvg || "";
+  const spiderSrc = $("reportBlock").dataset.spiderSrc || "";
+  const spiderSvg = $("reportBlock").dataset.spiderSvg || "";
+
+  const meta = {
+    assessor: $("assessor").value || "—",
+    date: $("assessmentDate").value || "—",
+    location: $("location").value || "—",
+    task: $("task").value || "—",
+    notes: $("notes").value || "—"
+  };
+
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    <div style="font-weight:900; font-size:13pt;">RULA Ergonomic Assessment Report</div>
+
+    <div style="margin-top:10px; font-size:12pt; font-weight:900; color:#00c2d1;">A. Assessment Metadata</div>
+    <table style="border-collapse:collapse; width:100%; font-size:11pt;">
+      <tr><td style="border:1px solid #999; padding:6px; font-weight:700; width:170px;">Assessor</td><td style="border:1px solid #999; padding:6px;">${escapeHtml(meta.assessor)}</td></tr>
+      <tr><td style="border:1px solid #999; padding:6px; font-weight:700;">Date</td><td style="border:1px solid #999; padding:6px;">${escapeHtml(meta.date)}</td></tr>
+      <tr><td style="border:1px solid #999; padding:6px; font-weight:700;">Location</td><td style="border:1px solid #999; padding:6px;">${escapeHtml(meta.location)}</td></tr>
+      <tr><td style="border:1px solid #999; padding:6px; font-weight:700;">Task / Activity</td><td style="border:1px solid #999; padding:6px;">${escapeHtml(meta.task)}</td></tr>
+    </table>
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">B. Score & Risk Summary</div>
+    <div style="font-size:11pt; font-weight:700; color:${scoreColor};">Final RULA score: ${calc.finalScore}</div>
+    <div style="margin-top:2px;">Risk band: <b>${escapeHtml(calc.riskText)}</b></div>
+    <div style="margin-top:2px;">Investigation priority: ${escapeHtml(calc.priority)}</div>
+
+    ${gaugeSrc ? `<div style="margin:8px 0 10px;"><img src="${gaugeSrc}" alt="RULA gauge" style="width:6.5in; max-width:6.5in; height:auto; display:block;" /></div>` : (gaugeSvg ? `<div style="margin:8px 0 10px;">${gaugeSvg}</div>` : "")}
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">C. Postural Risk Contributors</div>
+    <ul style="margin:6px 0 0 18px; padding:0; font-weight:400;">
+      ${drivers.length ? drivers.map(d=>`<li style="margin:2px 0; font-weight:400;">${escapeHtml(d)}</li>`).join("") : `<li style="font-weight:400;">—</li>`}
+    </ul>
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">D. Recommended Focus Areas</div>
+    <ul style="margin:6px 0 0 18px; padding:0; font-weight:400;">
+      ${recs.map(r=>`<li style="margin:2px 0; font-weight:400;">${escapeHtml(r)}</li>`).join("")}
+    </ul>
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">E. Notes</div>
+    <div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(meta.notes)}</div>
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">F. RULA Component Breakdown</div>
+    ${wordFigure("RULA Component Breakdown", breakdownSrc, breakdownSvg, "Figure: how Group A / Group B and modifiers combine to the final RULA score.", "6.5in")}
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">G. Visual Posture Profile</div>
+    ${wordFigure("Visual Posture Profile", profileSrc, profileSvg, "Figure: component intensities within each scoring range.", "6.5in")}
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">H. Spider Chart — Exposure Profile</div>
+    ${wordFigure("Spider Chart — Exposure Profile", spiderSrc, spiderSvg, "Figure: normalized spider chart across key posture/exposure components.", "6.5in")}
+  </div>`;
+}
+
+function buildBreakdownHtml(){
+  const breakdownSrc = $("reportBlock").dataset.breakdownSrc || "";
+  const breakdownSvg = $("reportBlock").dataset.breakdownSvg || "";
+  const spiderSrc = $("reportBlock").dataset.spiderSrc || "";
+  const spiderSvg = $("reportBlock").dataset.spiderSvg || "";
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    ${wordFigure("RULA Component Breakdown", breakdownSrc, breakdownSvg, "Figure: scoring pathway (Group A / Group B / modifiers → final score).", "6.5in")}
+    <div style="height:12px; font-size:1pt; line-height:12px;">&nbsp;</div>
+    ${wordFigure("Spider Chart — Exposure Profile", spiderSrc, spiderSvg, "Figure: normalized posture/exposure intensity profile.", "6.5in")}
+  </div>`;
+}
+
+
+
+
+function buildProfileHtml(){
+  const profileSrc = $("reportBlock").dataset.profileSrc || "";
+  const profileSvg = $("reportBlock").dataset.profileSvg || "";
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    ${wordFigure("Visual Posture Profile", profileSrc, profileSvg, "Figure: component intensities within each scoring range.", "6.5in")}
+  </div>`;
+}
+
+
+
+
+function buildSpiderHtml(){
+  const spiderSrc = $("reportBlock").dataset.spiderSrc || "";
+  const spiderSvg = $("reportBlock").dataset.spiderSvg || "";
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    ${wordFigure("Spider Chart — Exposure Profile", spiderSrc, spiderSvg, "Figure: normalized spider chart across key posture/exposure components.", "6.5in")}
+  </div>`;
+}
+
+
+function buildAppendixHtml(){
+  const calc = computeRula();
+
+  const meta = {
+    assessor: $("assessor").value || "—",
+    date: $("assessmentDate").value || "—",
+    location: $("location").value || "—",
+    task: $("task").value || "—"
+  };
+
+  const kStyle = "border:1px solid #666; padding:6px; font-weight:700; width:220px; background:#f7f9fe; vertical-align:top;";
+  const vStyle = "border:1px solid #666; padding:6px; vertical-align:top;";
+
+  const multiText = (id)=>Array.from($(id).selectedOptions).map(o=>o.textContent).join(", ") || "None";
+
+  const inputs = [
+    ["Upper arm", $("upperArm").selectedOptions[0].textContent],
+    ["Upper arm adjustments", multiText("upperArmAdjust")],
+    ["Lower arm", $("lowerArm").selectedOptions[0].textContent],
+    ["Lower arm adjustment", $("lowerArmAdjust").selectedOptions[0].textContent],
+    ["Wrist", $("wrist").selectedOptions[0].textContent],
+    ["Wrist deviation", $("wristAdjust").selectedOptions[0].textContent],
+    ["Wrist twist", $("wristTwist").selectedOptions[0].textContent],
+    ["Neck", $("neck").selectedOptions[0].textContent],
+    ["Neck adjustments", multiText("neckAdjust")],
+    ["Trunk", $("trunk").selectedOptions[0].textContent],
+    ["Trunk adjustments", multiText("trunkAdjust")],
+    ["Legs / support", $("legs").selectedOptions[0].textContent],
+    ["Muscle use", $("muscleUse").selectedOptions[0].textContent],
+    ["Force / load", $("forceLoad").selectedOptions[0].textContent],
+  ];
+
+  const inputsTable = `
+    <table style="border-collapse:collapse; width:100%; font-size:11pt;">
+      ${inputs.map(([k,v])=>`<tr><td style="${kStyle}">${escapeHtml(k)}</td><td style="${vStyle}">${escapeHtml(v)}</td></tr>`).join("")}
+    </table>`;
+
+  const trace = [
+    ["Upper arm score (base + adj)", String(calc.upperArmScore)],
+    ["Lower arm score (base + adj)", String(calc.lowerArmScore)],
+    ["Wrist score (base + deviation)", String(calc.wristScore)],
+    ["Wrist twist score", String(calc.wristTwistScore)],
+    ["Group A combined (1–9)", String(calc.groupACombined)],
+    ["Wrist+twist combined (1–6)", String(calc.wristCombined)],
+    ["Table A raw → final (+mods)", `${calc.tableARaw} → ${calc.tableAFinal}`],
+    ["Neck score (base + adj)", String(calc.neckScore)],
+    ["Trunk score (base + adj)", String(calc.trunkScore)],
+    ["Legs score", String(calc.legsScore)],
+    ["Group B combined (1–9)", String(calc.groupBCombined)],
+    ["Table B raw → final (+mods)", `${calc.tableBRaw} → ${calc.tableBFinal}`],
+    ["Modifiers (muscle + force)", `Muscle +${calc.muscleUseAdj}, Force +${calc.forceLoadAdj} (Total +${calc.modifiersTotal})`],
+    ["Table C lookup (B row × A col)", `B${calc.tableBFinal} × A${calc.tableAFinal} → Final ${calc.finalScore}`],
+  ];
+
+  const traceTable = `
+    <table style="border-collapse:collapse; width:100%; font-size:11pt;">
+      ${trace.map(([k,v])=>`<tr><td style="${kStyle}">${escapeHtml(k)}</td><td style="${vStyle}">${escapeHtml(v)}</td></tr>`).join("")}
+    </table>`;
+
+  // Table highlight indices (0-based)
+  const aRow = calc.groupACombined - 1;
+  const aCol = calc.wristCombined - 1;
+  const bRow = calc.groupBCombined - 1;
+  const bCol = calc.legsIndex - 1;
+  const cRow = calc.tableBFinal - 1;
+  const cCol = calc.tableAFinal - 1;
+
+  const tableAInline = buildMatrixTableInline(TABLE_A, aRow, aCol,
+    ["1","2","3","4","5","6"],
+    ["A1","A2","A3","A4","A5","A6","A7","A8","A9"]
+  );
+  const tableBInline = buildMatrixTableInline(TABLE_B, bRow, bCol,
+    ["Legs 1","Legs 2","Legs 3"],
+    ["B1","B2","B3","B4","B5","B6","B7","B8","B9"]
+  );
+  const tableCInline = buildTableCInline(TABLE_C, cRow, cCol);
+
+  return `
+  <div style="font-family:Arial,sans-serif; font-size:11pt; color:#000; line-height:1.25;">
+    <div style="font-weight:900; font-size:13pt;">Appendix — RULA Inputs & Scoring Rubric</div>
+    <div style="margin-top:4px;">Assessor: ${escapeHtml(meta.assessor)} · Date: ${escapeHtml(meta.date)} · Location: ${escapeHtml(meta.location)} · Task: ${escapeHtml(meta.task)}</div>
+
+    <div style="margin-top:12px; font-size:12pt; font-weight:900; color:#00c2d1;">A1. Captured Inputs</div>
+    <div style="margin-top:6px;">${inputsTable}</div>
+
+    <div style="margin-top:14px; font-size:12pt; font-weight:900; color:#00c2d1;">A2. Scoring Trace</div>
+    <div style="margin-top:6px;">${traceTable}</div>
+
+    <div style="margin-top:14px; font-size:12pt; font-weight:900; color:#00c2d1;">A3. Lookup Tables Used</div>
+    <div style="margin-top:4px; color:#333; font-size:10.5pt;">Cells used for this assessment are highlighted.</div>
+
+    <div style="margin-top:10px; font-weight:900;">Table A</div>
+    <div style="margin-top:6px;">${tableAInline}</div>
+
+    <div style="margin-top:14px; font-weight:900;">Table B</div>
+    <div style="margin-top:6px;">${tableBInline}</div>
+
+    <div style="margin-top:14px; font-weight:900;">Table C</div>
+    <div style="margin-top:6px;">${tableCInline}</div>
+  </div>`;
+}
+
+
+/* =========================
+   JSON Save/Load
+   ========================= */
+function getState(){
+  const getSel = (id)=>$(id).value;
+  const getMulti = (id)=>Array.from($(id).selectedOptions).map(o=>o.textContent);
+
+  return {
+    __meta:{
+      schema:"marsh_rula_assessment",
+      version:"2.0",
+      saved_iso: new Date().toISOString()
+    },
+    units: UNIT_MODE,
+    meta:{
+      assessor:getSel("assessor"),
+      assessmentDate:getSel("assessmentDate"),
+      location:getSel("location"),
+      task:getSel("task"),
+      notes:getSel("notes")
+    },
+    inputs:{
+      upperArm:getSel("upperArm"),
+      upperArmAdjust:getMulti("upperArmAdjust"),
+      lowerArm:getSel("lowerArm"),
+      lowerArmAdjust:getSel("lowerArmAdjust"),
+      wrist:getSel("wrist"),
+      wristAdjust:getSel("wristAdjust"),
+      wristTwist:getSel("wristTwist"),
+      neck:getSel("neck"),
+      neckAdjust:getMulti("neckAdjust"),
+      trunk:getSel("trunk"),
+      trunkAdjust:getMulti("trunkAdjust"),
+      legs:getSel("legs"),
+      muscleUse:getSel("muscleUse"),
+      forceLoad:getSel("forceLoad")
+    }
+  };
+}
+
+function applyMultiSelectByText(selectEl, texts){
+  const set = new Set(texts || []);
+  for (const opt of selectEl.options){
+    opt.selected = set.has(opt.textContent);
+  }
+}
+
+function applyState(state){
+  if (!state) return;
+  // restore units first (so labels match selections)
+  if (state.units) applyUnits(state.units, {update:false});
+  const meta = state.meta || {};
+  const inp = state.inputs || {};
+
+  $("assessor").value = meta.assessor || "";
+  $("assessmentDate").value = meta.assessmentDate || "";
+  $("location").value = meta.location || "";
+  $("task").value = meta.task || "";
+  $("notes").value = meta.notes || "";
+
+  if (inp.upperArm) $("upperArm").value = inp.upperArm;
+  applyMultiSelectByText($("upperArmAdjust"), inp.upperArmAdjust);
+
+  if (inp.lowerArm) $("lowerArm").value = inp.lowerArm;
+  if (inp.lowerArmAdjust !== undefined) $("lowerArmAdjust").value = inp.lowerArmAdjust;
+
+  if (inp.wrist) $("wrist").value = inp.wrist;
+  if (inp.wristAdjust !== undefined) $("wristAdjust").value = inp.wristAdjust;
+  if (inp.wristTwist) $("wristTwist").value = inp.wristTwist;
+
+  if (inp.neck) $("neck").value = inp.neck;
+  applyMultiSelectByText($("neckAdjust"), inp.neckAdjust);
+
+  if (inp.trunk) $("trunk").value = inp.trunk;
+  applyMultiSelectByText($("trunkAdjust"), inp.trunkAdjust);
+
+  if (inp.legs) $("legs").value = inp.legs;
+
+  if (inp.muscleUse !== undefined) $("muscleUse").value = inp.muscleUse;
+  if (inp.forceLoad !== undefined) $("forceLoad").value = inp.forceLoad;
+}
+
+/* =========================
+   Event Wiring
+   ========================= */
+$("btnCalc").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    toast("Updated");
+  }catch(e){
+    console.error(e);
+    toast("Error");
+  }
+});
+
+$("btnReset").addEventListener("click", async ()=>{
+  // reset to defaults
+  $("assessor").value="";
+  $("assessmentDate").value="";
+  $("location").value="";
+  $("task").value="";
+  $("notes").value="";
+
+  $("upperArm").value="1";
+  for (const o of $("upperArmAdjust").options) o.selected=false;
+  $("lowerArm").value="1";
+  $("lowerArmAdjust").value="0";
+  $("wrist").value="1";
+  $("wristAdjust").value="0";
+  $("wristTwist").value="1";
+
+  $("neck").value="1";
+  for (const o of $("neckAdjust").options) o.selected=false;
+  $("trunk").value="1";
+  for (const o of $("trunkAdjust").options) o.selected=false;
+  $("legs").value="1";
+
+  $("muscleUse").value="0";
+  $("forceLoad").value="0";
+
+  await updateAll();
+  toast("Reset");
+});
+
+$("btnSaveJson").addEventListener("click", ()=>{
+  try{
+    const state = getState();
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const safeDate = (new Date()).toISOString().slice(0,10);
+    a.href = url;
+    a.download = `RULA_Assessment_${safeDate}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("JSON saved");
+  }catch(e){
+    console.error(e);
+    toast("Save failed");
+  }
+});
+
+$("btnLoadJson").addEventListener("click", ()=> $("jsonFile").click());
+
+$("jsonFile").addEventListener("change", async (ev)=>{
+  const file = ev.target.files?.[0];
+  if (!file) return;
+  try{
+    const txt = await file.text();
+    const state = JSON.parse(txt);
+    applyState(state);
+    await updateAll();
+    toast("JSON loaded");
+  }catch(e){
+    console.error(e);
+    toast("Load failed");
+  } finally {
+    ev.target.value = "";
+  }
+});
+
+
+$("btnCopySummary").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildSummaryHtml());
+    toast(ok ? "Summary copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("btnCopyReport").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildReportHtml());
+    toast(ok ? "Report copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("btnCopyBreakdown").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildBreakdownHtml());
+    toast(ok ? "Breakdown copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("btnCopyProfile").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildProfileHtml());
+    toast(ok ? "Profile copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("btnCopySpider").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildSpiderHtml());
+    toast(ok ? "Spider copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("btnCopyAppendix").addEventListener("click", async ()=>{
+  try{
+    await updateAll();
+    await ensureCopyAssets();
+    const ok = await copyHtml(buildAppendixHtml());
+    toast(ok ? "Appendix copied" : "Select + Ctrl+C");
+  }catch(e){
+    console.error(e);
+    toast("Copy failed");
+  }
+});
+
+$("themeToggle").addEventListener("click", ()=>{
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  themeSet(cur==="light" ? "dark" : "light");
+});
+
+// live updates
+[
+  "assessor","assessmentDate","location","task","notes",
+  "upperArm","upperArmAdjust","lowerArm","lowerArmAdjust","wrist","wristAdjust","wristTwist",
+  "neck","neckAdjust","trunk","trunkAdjust","legs",
+  "muscleUse","forceLoad"
+].forEach(id=>{
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener("change", ()=>updateAll());
+  el.addEventListener("input", ()=>updateAll());
+});
+
+// init
+themeInit();
+window.addEventListener("load", async ()=>{
+  wireUnitToggle();
+  applyUnits("imperial", {update:false});
+
+  // populate date if empty (local)
+  if (!$("assessmentDate").value){
+    try{
+      const d = new Date();
+      const iso = d.toISOString().slice(0,10);
+      $("assessmentDate").value = iso;
+    }catch(_){}
+  }
+  await updateAll();
+});
+</script>
 </body>
 </html>
