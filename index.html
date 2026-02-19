@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MARSH RULA Tool — Enhanced Reporting</title>
+  <style>
+    :root {
+      --bg: #f3f7ff;
+      --card: #fff;
+      --text: #0d1b2a;
+      --muted: #50617a;
+      --line: #dce6f6;
+      --cyan: #00c2d1;
+      --blue: #2f73ff;
+      --purple: #6b57ff;
+      --green: #2abf7a;
+      --amber: #ffbf3a;
+      --red: #e73742;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 15% -10%, #dff9fc 0, transparent 35%), var(--bg);
+    }
+
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 20px; }
+
+    .top {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 14px 38px rgba(15, 38, 74, .12);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .top h1 { margin: 0; font-size: 20px; }
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 10px 32px rgba(15, 38, 74, .09);
+      overflow: hidden;
+    }
+
+    .hd {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, rgba(0, 194, 209, .11), rgba(0, 194, 209, .02));
+    }
+
+    .hd h2 { margin: 0; font-size: 15px; }
+    .bd { padding: 14px; }
+
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+    label { font-size: 12px; color: var(--muted); font-weight: 700; }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 5px;
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      border-radius: 12px;
+      padding: 10px;
+      color: var(--text);
+    }
+
+    textarea { min-height: 88px; }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(120deg, var(--blue), var(--cyan));
+    }
+
+    .copyRow { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .copyBtn {
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: .2px;
+      border-radius: 999px;
+      padding: 9px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(29, 86, 220, .25);
+      background: linear-gradient(120deg, #2f73ff, #00c2d1 52%, #6b57ff);
+      background-size: 170% 170%;
+      transition: transform .08s ease, filter .18s ease, background-position .25s ease;
+    }
+
+    .copyBtn:hover { filter: brightness(1.05); background-position: 100% 0; }
+    .copyBtn:active { transform: translateY(1px); }
+
+    .score {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 6px 0 12px;
+    }
+
+    .riskTag {
+      display: inline-block;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+
+    .report {
+      border: 1px solid #d2d9ea;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      font-size: 11pt;
+      line-height: 1.25;
+    }
+
+    .section { color: var(--cyan); font-weight: 900; margin: 12px 0 6px; font-size: 12pt; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    th, td { border: 1px solid #95a7c8; padding: 5px; text-align: center; }
+    th { background: #eef4ff; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.85);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 11px;
+      opacity: 0;
+      transition: opacity .15s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>MARSH RULA Tool (Client Edition)</h1>
+        <div class="muted">Enhanced reporting diagrams (gauge, profile bars, spider chart, heat matrix) and Word-ready data tables.</div>
+      </div>
+      <button class="btn primary" id="btnCalc">Update RULA Score</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="hd"><h2>Inputs</h2></div>
+        <div class="bd">
+          <div class="row">
+            <div><label>Assessor<input id="assessor" type="text" placeholder="Name"></label></div>
+            <div><label>Date<input id="assessmentDate" type="date"></label></div>
+            <div><label>Location<input id="location" type="text" placeholder="Workstation"></label></div>
+            <div><label>Task<input id="task" type="text" placeholder="Task description"></label></div>
+          </div>
+          <hr>
+          <div class="row">
+            <div><label>Upper Arm<select id="upperArm"><option value="1">0–20°</option><option value="2">21–45°</option><option value="3">46–90°</option><option value="4">&gt;90°</option></select></label></div>
+            <div><label>Lower Arm<select id="lowerArm"><option value="1">60–100°</option><option value="2">&lt;60° or &gt;100°</option></select></label></div>
+            <div><label>Wrist<select id="wrist"><option value="1">Neutral</option><option value="2">&gt;15°</option><option value="3">&gt;30°</option></select></label></div>
+            <div><label>Wrist Twist<select id="wristTwist"><option value="1">Mid-range</option><option value="2">End-range</option></select></label></div>
+            <div><label>Neck<select id="neck"><option value="1">0–10°</option><option value="2">11–20°</option><option value="3">&gt;20°/Ext.</option></select></label></div>
+            <div><label>Trunk<select id="trunk"><option value="1">0–20°</option><option value="2">21–60°</option><option value="3">&gt;60°/Ext.</option></select></label></div>
+            <div><label>Legs<select id="legs"><option value="1">Balanced</option><option value="2">Some imbalance</option><option value="3">Unstable</option></select></label></div>
+            <div><label>Modifiers<select id="mod"><option value="0">None</option><option value="1">Static/repetitive</option><option value="2">Force + static</option><option value="3">High force</option></select></label></div>
+          </div>
+          <div style="margin-top:8px;"><label>Notes<textarea id="notes" placeholder="Observations"></textarea></label></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd">
+          <h2>Outputs</h2>
+          <div class="copyRow">
+            <button class="copyBtn" id="copySummary">📋 Copy Summary</button>
+            <button class="copyBtn" id="copyReport">🧾 Copy Full Report</button>
+            <button class="copyBtn" id="copyTables">📊 Copy Data Tables</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="score">Final Score: <span id="finalScore">—</span></div>
+          <div class="riskTag" id="riskTag">—</div>
+
+          <div id="gaugeHost"></div>
+          <div style="margin-top:8px" id="barHost"></div>
+          <div style="margin-top:8px" id="spiderHost"></div>
+          <div style="margin-top:8px" id="heatHost"></div>
+
+          <div class="report" id="reportBlock" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 1100); };
+
+    const riskText = (s) => s <= 2 ? "Low" : s <= 4 ? "Moderate" : s <= 6 ? "Medium-High" : "High";
+
+    function compute() {
+      const ua = +$("upperArm").value;
+      const la = +$("lowerArm").value;
+      const w = +$("wrist").value;
+      const wt = +$("wristTwist").value;
+      const n = +$("neck").value;
+      const t = +$("trunk").value;
+      const l = +$("legs").value;
+      const m = +$("mod").value;
+      const score = Math.min(7, Math.max(1, Math.round((ua + la + w + wt + n + t + l) / 2.2 + m / 1.5)));
+      return { ua, la, w, wt, n, t, l, m, score };
+    }
+
+    function scoreColor(score){
+      if(score <= 2) return '#2abf7a';
+      if(score <= 4) return '#a7b31a';
+      if(score <= 6) return '#ffbf3a';
+      return '#e73742';
+    }
+
+    function gaugeSvg(score){
+      const x = 30 + ((score-1) / 6) * 500;
+      return `<svg viewBox="0 0 560 80" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2abf7a"/><stop offset=".5" stop-color="#ffbf3a"/><stop offset="1" stop-color="#e73742"/></linearGradient></defs>
+        <rect x="30" y="24" width="500" height="14" rx="7" fill="url(#g)"/>
+        <line x1="${x}" y1="14" x2="${x}" y2="50" stroke="#111" stroke-width="2"/>
+        <circle cx="${x}" cy="50" r="4" fill="#111"/>
+        <text x="30" y="67" font-size="11">1</text><text x="530" y="67" font-size="11" text-anchor="end">7</text>
+      </svg>`;
+    }
+
+    function barsSvg(c){
+      const rows = [
+        ['Upper Arm', c.ua, 4], ['Lower Arm', c.la, 2], ['Wrist', c.w, 3], ['Wrist Twist', c.wt, 2],
+        ['Neck', c.n, 3], ['Trunk', c.t, 3], ['Legs', c.l, 3], ['Modifiers', c.m, 3]
+      ];
+      const body = rows.map((r, i) => {
+        const y = 44 + i*22;
+        const pct = (r[1] / r[2]);
+        return `<text x="10" y="${y+10}" font-size="11">${r[0]}</text>
+          <rect x="130" y="${y}" width="250" height="12" rx="6" fill="#edf2ff"/>
+          <rect x="130" y="${y}" width="${250*pct}" height="12" rx="6" fill="${scoreColor(Math.round(1+pct*6))}"/>
+          <text x="390" y="${y+10}" font-size="11">${r[1]} / ${r[2]}</text>`;
+      }).join('');
+      return `<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg"><text x="10" y="20" font-weight="700" font-size="13">Component Intensity Profile</text>${body}</svg>`;
+    }
+
+    function spiderSvg(c){
+      const vals = [c.ua/4, c.la/2, c.w/3, c.n/3, c.t/3, c.l/3, c.m/3];
+      const labels = ['Upper Arm','Lower Arm','Wrist','Neck','Trunk','Legs','Load'];
+      const cx=230, cy=210, R=145, n=vals.length;
+      const p = (r,i)=>{ const a=-Math.PI/2+i*(2*Math.PI/n); return [cx+r*R*Math.cos(a), cy+r*R*Math.sin(a)]; };
+      const rings = [0.25,0.5,0.75,1].map(fr=>`<polygon points="${vals.map((_,i)=>{const q=p(fr,i);return q[0]+','+q[1]}).join(' ')}" fill="none" stroke="#d8e0f0"/>`).join('');
+      const spokes = vals.map((_,i)=>{ const e=p(1,i), l=p(1.14,i); return `<line x1="${cx}" y1="${cy}" x2="${e[0]}" y2="${e[1]}" stroke="#d8e0f0"/><text x="${l[0]}" y="${l[1]}" font-size="11" text-anchor="middle">${labels[i]}</text>`; }).join('');
+      const area = `<polygon points="${vals.map((v,i)=>{const q=p(v,i);return q[0]+','+q[1]}).join(' ')}" fill="${scoreColor(c.score)}55" stroke="${scoreColor(c.score)}" stroke-width="2"/>`;
+      return `<svg viewBox="0 0 460 430" xmlns="http://www.w3.org/2000/svg"><text x="10" y="20" font-weight="700" font-size="13">Spider Chart — Exposure Profile</text>${rings}${spokes}${area}</svg>`;
+    }
+
+    function heatTable(c){
+      const components = [c.ua, c.la, c.w, c.wt, c.n, c.t, c.l, c.m];
+      const labels = ['UA','LA','W','WT','N','T','L','M'];
+      const cell = (v) => `background:${v>=3?'#ffd4d8':v===2?'#fff2d1':'#d9f5e8'}; font-weight:700;`;
+      return `<div><div style="font-weight:700;margin-bottom:5px">Risk Heat Matrix (Quick Visual Table)</div>
+      <table><tr>${labels.map(l=>`<th>${l}</th>`).join('')}</tr><tr>${components.map(v=>`<td style="${cell(v)}">${v}</td>`).join('')}</tr></table></div>`;
+    }
+
+    function buildReport(c){
+      const meta = { a: $("assessor").value || '—', d: $("assessmentDate").value || '—', l: $("location").value || '—', t: $("task").value || '—', n: $("notes").value || '—' };
+      return `<div><div style="font-size:13pt;font-weight:900">RULA Ergonomic Assessment Report</div>
+      <div class="section">A. Metadata</div>
+      <table><tr><th>Assessor</th><th>Date</th><th>Location</th><th>Task</th></tr><tr><td>${meta.a}</td><td>${meta.d}</td><td>${meta.l}</td><td>${meta.t}</td></tr></table>
+      <div class="section">B. Summary</div>
+      <div><b style="color:${scoreColor(c.score)}">Final RULA Score: ${c.score}</b> · Risk: ${riskText(c.score)}</div>
+      <div class="section">C. Executive Data Table</div>
+      <table><tr><th>Upper Arm</th><th>Lower Arm</th><th>Wrist</th><th>Wrist Twist</th><th>Neck</th><th>Trunk</th><th>Legs</th><th>Modifiers</th></tr>
+      <tr><td>${c.ua}</td><td>${c.la}</td><td>${c.w}</td><td>${c.wt}</td><td>${c.n}</td><td>${c.t}</td><td>${c.l}</td><td>${c.m}</td></tr></table>
+      <div class="section">D. Notes</div><div>${meta.n.replace(/\n/g,'<br>')}</div></div>`;
+    }
+
+    async function copyHtml(html){
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          await navigator.clipboard.write([new ClipboardItem({"text/html": new Blob([html], {type: "text/html"}), "text/plain": new Blob([html.replace(/<[^>]+>/g, ' ')], {type: "text/plain"})})]);
+          return true;
+        }
+      } catch (_) {}
+      const holder = document.createElement('div');
+      holder.contentEditable = 'true';
+      holder.style.position = 'fixed'; holder.style.left = '-9999px';
+      holder.innerHTML = html; document.body.appendChild(holder);
+      const r = document.createRange(); r.selectNodeContents(holder);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      const ok = document.execCommand('copy'); holder.remove(); s.removeAllRanges();
+      return ok;
+    }
+
+    function refresh(){
+      const c = compute();
+      const color = scoreColor(c.score);
+      $("finalScore").textContent = c.score;
+      $("riskTag").textContent = `${riskText(c.score)} risk`;
+      $("riskTag").style.borderColor = color;
+      $("gaugeHost").innerHTML = gaugeSvg(c.score);
+      $("barHost").innerHTML = barsSvg(c);
+      $("spiderHost").innerHTML = spiderSvg(c);
+      $("heatHost").innerHTML = heatTable(c);
+      $("reportBlock").innerHTML = buildReport(c);
+    }
+
+    $("btnCalc").addEventListener('click', refresh);
+    [...document.querySelectorAll('input,select,textarea')].forEach(el=>{ el.addEventListener('change', refresh); el.addEventListener('input', refresh); });
+
+    $("copySummary").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("gaugeHost").innerHTML}${$("heatHost").innerHTML}<p><b>Final score: ${$("finalScore").textContent}</b></p></div>`); toast(ok? 'Summary copied':'Copy failed'); });
+    $("copyReport").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("reportBlock").innerHTML}${$("barHost").innerHTML}${$("spiderHost").innerHTML}</div>`); toast(ok? 'Report copied':'Copy failed'); });
+    $("copyTables").addEventListener('click', async ()=>{ const ok = await copyHtml(`<div style="font-family:Arial">${$("heatHost").innerHTML}${$("reportBlock").querySelector('table:last-of-type').outerHTML}</div>`); toast(ok? 'Data tables copied':'Copy failed'); });
+
+    if (!$("assessmentDate").value) $("assessmentDate").value = new Date().toISOString().slice(0,10);
+    refresh();
+  </script>
+</body>
+</html>
